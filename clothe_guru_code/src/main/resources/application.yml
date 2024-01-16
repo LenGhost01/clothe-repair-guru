@@ -1,0 +1,11 @@
+# 通用配置
+#当前激活的环境
+spring:
+  profiles:
+    active: dev
+
+#mybatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+

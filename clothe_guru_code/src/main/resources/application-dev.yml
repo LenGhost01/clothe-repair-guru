@@ -1,0 +1,79 @@
+# 开发环境配置
+
+
+spring:
+  #配置mysql关系型数据库连接,并在url中设置自动提交。
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.32.143:3306/chothe_master?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&useUnicode=true&autoCommit=true
+    username: root
+    password: opr416
+
+  #配置redis数据库
+  data:
+    redis:
+      host: 192.168.32.141
+      port: 6379
+      database: 1
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 8
+      cache:
+        # 配置redis缓存配置信息
+        type: redis
+        redis:
+          time-to-live: 3600000 # 在开发环境中，设置超时时间为一个小时，方便调试
+
+  # 开发环境下，websocket线程池配置
+  websocket:
+    task:
+      execution:
+        pool:
+          # 配置线程池的长度为10，最大长度为30，线程池中队列的长度为1000
+          coreSize: 5
+          maxSize: 15
+          queueLength: 1000
+
+  mail:
+    host: smtp.163.com
+    protocol: smtp
+    default-encoding: UTF-8
+    username: 17858268342@163.com
+    password: OEWPCFWGCLPQVXPG
+    test-connection: true
+    properties:
+      mail:
+        # 定义邮件发送相关信息
+        smtp:
+          auth: true # 需要身份验证
+          starttls:
+            enable: true
+            required: true
+  # 设置视频等文件的传输
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2GB
+      max-request-size: 3000MB
+
+# 开发流程中，直接将sql语句打印到控制台，方便调试
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#开发环境端口号
+server:
+  port: 8090
+  servlet:
+    context-path: "/clothe-master"
+    encoding:
+      charset: UTF-8
+
+store:
+  ftp:
+    host: "192.168.32.144"
+    port: 21
+    user: "chenhaozhe"
+    password: "opr416"
+    imgPath: resources/imgs/
