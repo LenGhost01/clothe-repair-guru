@@ -2,6 +2,8 @@ package com.chenhaozhe.clothe_guru_code.controller;
 
 import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationReplyDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationRequestDTO;
+import com.chenhaozhe.clothe_guru_code.model.enums.ApplicationKeyWordEnum;
+import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 import com.chenhaozhe.clothe_guru_code.services.ApplicationServices;
 import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
@@ -25,15 +27,15 @@ public class ApplicationController {
     }
 
     @GetMapping("/userQueryApplication")
-    public void userQueryApplication(@RequestParam("userId")Long userId){
+    public void userQueryApplication(@RequestParam("userId")Long userId,@RequestParam("page")Integer page){
         // TODO 实现功能：用户查询自己的请求申请记录
-        applicationServices.userQueryApplications(userId);
+        applicationServices.userQueryApplications(userId,page);
     }
 
     @GetMapping("/adminQueryApplication")
-    public void adminQueryApplication(){
+    public void adminQueryApplication(@RequestParam("page")Integer page){
         // TODO 实现功能：管理员查询所有的申请记录
-        applicationServices.adminQueryAllApplications();
+        applicationServices.adminQueryAllApplications(page);
     }
 
     @PostMapping("/adminUpdateApplication")
@@ -43,5 +45,12 @@ public class ApplicationController {
                 applicationReplyDTO.getAuditState(), applicationReplyDTO.getAuditFeedback());
     }
 
+    @GetMapping("/getApplicationsLikeKeyWord")
+    public List<UserVo> getApplicationsLikeKeyWord(@RequestParam("keyWord") String keyWord,
+                                            @RequestParam("page") Integer page,
+                                                   @RequestParam("keyState") Short keyState){
+        applicationServices.adminQueryAllApplications(keyWord,page, ApplicationKeyWordEnum.values()[keyState].getLabel());
+        return null;
+    }
 
 }

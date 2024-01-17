@@ -2,6 +2,7 @@ package com.chenhaozhe.clothe_guru_code.mapper;
 
 import com.chenhaozhe.clothe_guru_code.model.entity.ApplicationsEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 import com.chenhaozhe.clothe_guru_code.util.DynaSQLProviderBuilder;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -42,8 +43,15 @@ public interface UserMapper {
             """)
     Integer updateCurrentVisitTime(@Param("lastLogin")String currentTime);
 
+    @Select("""
+            select * from users limit #{size} offset #{offset}
+            """)
+    List<UserEntity> selectUsers(@Param("size")Short size,@Param("offset")Integer offset);
 
-
+    @Select("""
+            select * from users where nickname like #{keyWord} limit #{size} offset #{offset}
+            """)
+    List<UserEntity> selectUsers(@Param("size")Short size,@Param("offset")Integer offset,@Param("keyWord") String keyWord);
     @UpdateProvider(type = DynaSQLProviderBuilder.class,method = "updateUser")
     Integer updateUser(@Param("user")UserEntity user);
 

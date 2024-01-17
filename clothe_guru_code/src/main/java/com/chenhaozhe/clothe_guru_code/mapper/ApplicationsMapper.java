@@ -10,14 +10,21 @@ import java.util.List;
 @Repository
 public interface ApplicationsMapper {
     @Select("""
-            select * from applications where user_id=#{userId}
+            select * from applications where user_id=#{userId} limit #{size} offset #{offset}
             """)
-    List<ApplicationsEntity> selectApplicationsByUserId(@Param("userId")Long userId);
+    List<ApplicationsEntity> selectApplicationsByUserId(@Param("userId")Long userId,@Param("size")Short size,
+                                                        @Param("offset")Integer offset);
 
     @Select("""
-            select * from applications
+            select * from applications_users_view limit #{size} offset #{offset}
             """)
-    List<ApplicationsEntity> selectApplications();
+    List<ApplicationsEntity> selectApplications(@Param("size")Short size, @Param("offset")Integer offset);
+    @Select("""
+            select * from applications_users_view ${keyState} like #{keyWord} limit #{size} offset #{offset}
+            """)
+    List<ApplicationsEntity> selectApplications(@Param("size")Short size, @Param("offset")Integer offset,
+                                                @Param("keyState")String keyState,@Param("KeyWord")String keyWord);
+
 
     @Update("""
             update applications set audit_state=#{auditState},audit_feedback=#{auditFeedback}

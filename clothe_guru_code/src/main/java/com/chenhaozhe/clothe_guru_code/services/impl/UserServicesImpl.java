@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -35,6 +36,9 @@ public class UserServicesImpl implements UserServices {
     private UserMapper userMapper;
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Value("${customConst.defaultPageSize}")
+    private Short defaultPageSize;
     @Override
     public void InsertUserToDatabase(UserRegisterVo registerVo) {
         // 由系统分配一个id，再去除vo对象中对应的参数。
@@ -108,6 +112,18 @@ public class UserServicesImpl implements UserServices {
         return JackonUtil.ObjectToJSON(userVo);
     }
 
+    @Override
+    public List<UserVo> getAllUsers(Integer page) {
+        Integer offset = defaultPageSize*page;
+        return userMapper.selectUsers(defaultPageSize,offset).stream().map(item -> UserConverter.convertToVO(item)).toList();
+    }
+
+    @Override
+    public List<UserVo> getAllUsersByKeyWord(String keyWord, Integer page) {
+        Integer offset = defaultPageSize*page;
+        return userMapper.selectUsers(defaultPageSize,offset,"%"+keyWord+"%").stream().map(item -> UserConverter.convertToVO(item)).toList();
+    }
+
     //↓ 下面是一些通用的方法
     public String generateUserMsgJson(UserEntity userEntity){
         UserVo userVo = UserConverter.convertToVO(userEntity);
@@ -121,6 +137,7 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Cacheable(key="#uid",value = "userCache")
+    @Override
     public UserVo getUserById(Long uid){
         //用户登录成功后，将用户信息送入缓存
         UserVo userVo = UserConverter.convertToVO(userMapper.selectUserByUserId(uid));
@@ -135,5 +152,6 @@ public class UserServicesImpl implements UserServices {
     }
 
     @CacheEvict(key="#uid")
-    public void UserEvict(Long uid){} //用户退出登录时，删除缓存中的信息
+    @Override
+    public void userEvict(Long uid){} //用户退出登录时，删除缓存中的信息
 }

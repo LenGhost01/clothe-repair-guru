@@ -77,3 +77,6 @@ store:
     user: "chenhaozhe"
     password: "opr416"
     imgPath: resources/imgs/
+
+customConst:
+  defaultPageSize: 20

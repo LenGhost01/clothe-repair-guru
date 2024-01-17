@@ -36,6 +36,8 @@ public class ApplicationServiceImpl implements ApplicationServices {
     private String password;
     @Value("${store.ftp.imgPath}")
     private String imgPath;
+    @Value("${customConst.defaultPageSize}")
+    private Short defaultPageSize;
 
     @Override
     @Transactional
@@ -69,14 +71,23 @@ public class ApplicationServiceImpl implements ApplicationServices {
     }
 
     @Override
-    public List<ApplicationsEntity> userQueryApplications(Long userId) {
-        return applicationsMapper.selectApplicationsByUserId(userId);
+    public List<ApplicationsEntity> userQueryApplications(Long userId,Integer page) {
+        Integer offset = page*defaultPageSize;
+        return applicationsMapper.selectApplicationsByUserId(userId,defaultPageSize,offset);
     }
 
     @Override
-    public List<ApplicationsEntity> adminQueryAllApplications() {
-        return applicationsMapper.selectApplications();
+    public List<ApplicationsEntity> adminQueryAllApplications(Integer page) {
+        Integer offset = page*defaultPageSize;
+        return applicationsMapper.selectApplications(defaultPageSize,offset);
     }
+
+    @Override
+    public List<ApplicationsEntity> adminQueryAllApplications(String keyWord, Integer page, String keyState) {
+        Integer offset = page*defaultPageSize;
+        return applicationsMapper.selectApplications(defaultPageSize,offset,keyState,"%"+keyWord+"%");
+    }
+
 
     @Override
     public void updateApplication(Integer applicationId, Short auditState, String auditFeedback) {

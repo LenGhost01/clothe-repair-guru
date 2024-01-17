@@ -1,6 +1,7 @@
 package com.chenhaozhe.clothe_guru_code.controller;
 
 
+import com.chenhaozhe.clothe_guru_code.mapper.UserMapper;
 import com.chenhaozhe.clothe_guru_code.model.converter.UserConverter;
 import com.chenhaozhe.clothe_guru_code.model.dto.AlterUserDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.UserLoginMailDTO;
@@ -12,6 +13,8 @@ import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -49,5 +52,25 @@ public class UserController {
     @PostMapping("/alterUser")
     public String alterUser(@RequestBody AlterUserDTO alterUserDTO){
         return userServices.AlterUserCheckPassword(alterUserDTO.getOldPassword(), UserConverter.convertToEntity(alterUserDTO.getUserDTO()));
+    }
+
+    @GetMapping("/getAllUser")
+    public List<UserVo> getAllUser(@RequestParam("page")Integer page){
+        return userServices.getAllUsers(page);
+    }
+    @GetMapping("/getAllUserLikeKeyWord")
+    public List<UserVo> getAllUserLikeKeyWord(@RequestParam("keyWord")String keyWord,
+                                              @RequestParam("page")Integer page){
+        // 关键字查询
+        return userServices.getAllUsersByKeyWord(keyWord,page);
+    }
+    @GetMapping("/getUserById")
+    public UserVo getUserByUserId(@RequestParam("uid")Long userId){
+        return userServices.getUserById(userId);
+    }
+
+    @GetMapping("/userQuit")
+    public void userQuit(@RequestParam("uid")Long userId){
+        userServices.userEvict(userId);
     }
 }
