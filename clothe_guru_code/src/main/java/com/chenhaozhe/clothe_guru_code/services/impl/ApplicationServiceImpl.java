@@ -85,7 +85,7 @@ public class ApplicationServiceImpl implements ApplicationServices {
     @Override
     public List<ApplicationsEntity> adminQueryAllApplications(String keyWord, Integer page, String keyState) {
         Integer offset = page*defaultPageSize;
-        return applicationsMapper.selectApplications(defaultPageSize,offset,keyState,"%"+keyWord+"%");
+        return applicationsMapper.selectApplicationsLikeKeyWord(defaultPageSize,offset,keyState,"%"+keyWord+"%");
     }
 
 

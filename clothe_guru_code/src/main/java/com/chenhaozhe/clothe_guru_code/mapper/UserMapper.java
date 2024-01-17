@@ -51,7 +51,7 @@ public interface UserMapper {
     @Select("""
             select * from users where nickname like #{keyWord} limit #{size} offset #{offset}
             """)
-    List<UserEntity> selectUsers(@Param("size")Short size,@Param("offset")Integer offset,@Param("keyWord") String keyWord);
+    List<UserEntity> selectUsersLikeKeyWord(@Param("size")Short size,@Param("offset")Integer offset,@Param("keyWord") String keyWord);
     @UpdateProvider(type = DynaSQLProviderBuilder.class,method = "updateUser")
     Integer updateUser(@Param("user")UserEntity user);
 

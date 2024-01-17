@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-@Slf4j
 public class UserServicesImpl implements UserServices {
     @Resource
     private UserMapper userMapper;
@@ -121,7 +120,7 @@ public class UserServicesImpl implements UserServices {
     @Override
     public List<UserVo> getAllUsersByKeyWord(String keyWord, Integer page) {
         Integer offset = defaultPageSize*page;
-        return userMapper.selectUsers(defaultPageSize,offset,"%"+keyWord+"%").stream().map(item -> UserConverter.convertToVO(item)).toList();
+        return userMapper.selectUsersLikeKeyWord(defaultPageSize,offset,"%"+keyWord+"%").stream().map(item -> UserConverter.convertToVO(item)).toList();
     }
 
     //↓ 下面是一些通用的方法

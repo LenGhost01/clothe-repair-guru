@@ -22,7 +22,7 @@ public interface ApplicationsMapper {
     @Select("""
             select * from applications_users_view ${keyState} like #{keyWord} limit #{size} offset #{offset}
             """)
-    List<ApplicationsEntity> selectApplications(@Param("size")Short size, @Param("offset")Integer offset,
+    List<ApplicationsEntity> selectApplicationsLikeKeyWord(@Param("size")Short size, @Param("offset")Integer offset,
                                                 @Param("keyState")String keyState,@Param("KeyWord")String keyWord);
 
 

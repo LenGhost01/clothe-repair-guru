@@ -8,4 +8,5 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.chenhaozhe.clothe_guru_code.model.entity
