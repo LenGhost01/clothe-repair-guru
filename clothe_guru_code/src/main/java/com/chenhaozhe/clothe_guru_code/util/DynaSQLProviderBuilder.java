@@ -21,4 +21,22 @@ public class DynaSQLProviderBuilder {
            }
        }.toString();
    }
+
+    public String getAllMerchant(final Short limit,final Integer offset,final String keyWord, final String keyState,
+                                 final String orderValue,final Boolean orderRule){
+       return new SQL(){
+           {
+                SELECT("*");
+                FROM("merchant");
+                if(!(Objects.equals(keyWord,null)||Objects.equals(keyState,null))){
+                    WHERE(keyState+ "like #{keyWord}");
+                }
+                if(!(Objects.equals(orderValue,null) || Objects.equals(orderRule,null)) ){
+                    ORDER_BY(orderValue + (orderRule?" ASC":" DESC"));
+                }
+                LIMIT(limit);
+                OFFSET(offset);
+           }
+       }.toString();
+    }
 }
