@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MerchandiseEntity {
+@Builder
+public class ViewMerchandiseEntity {
     private Integer merchandiseId;
     private String merchandiseName;
     private String merchandiseDescription;
@@ -23,7 +23,10 @@ public class MerchandiseEntity {
     private BigDecimal rating;
     private String publishTime;
     private Integer sales;
-    private Integer satisfaction;
+    private BigDecimal satisfactionRate;
     private String mainImg;
     private String subImg;
+    private String merchantName;
+    private String address;
+    private String paymentMethod;
 }

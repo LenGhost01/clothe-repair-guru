@@ -19,6 +19,7 @@ public class UserConverter {
                 .email(entity.getEmail())
                 .username(entity.getUsername())
                 .password(null) //对密码擦除
+                .avatar(entity.getAvatar())
                 .build();
         return vo;
     }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenhaozhe.clothe_guru_code.mapper.MerchandiseMapper">
+   <!-- 通过数据传输对象中的属性来编写动态sql查询语句 -->
+    <select id="queryMerchandiseFromView" parameterType="MerchandiseWrapper" resultType="ViewMerchandiseEntity">
+        SELECT merchandise_id, merchandise_name,merchandise_description,low_price,high_price,category,
+        material,belongs,rating,publish_time,sales,satisfaction_rate,main_img,sub_img,merchant_name,address,payment_method
+        FROM merchant_merchandise_view
+        <where>
+            <if test="merchandiseWrapper.keyWord != null and merchandiseWrapper.keyLabel != null">
+                ${merchandiseWrapper.keyLabel} LIKE CONCAT('%', #{merchandiseWrapper.keyWord}, '%')
+            </if>
+            <choose>
+                <when test="merchandiseWrapper.lowPrice != null">
+                    AND low_price <![CDATA[ >= ]]> #{merchandiseWrapper.lowPrice}
+                </when>
+                <when test="merchandiseWrapper.highPrice != null">
+                    AND low_price <![CDATA[ <= ]]> #{merchandiseWrapper.highPrice}
+                </when>
+            </choose>
+        </where>
+        <if test="merchandiseWrapper.orderLabel != null and merchandiseWrapper.orderRule != null">
+            ORDER BY ${merchandiseWrapper.orderLabel} ${merchandiseWrapper.orderRule}
+        </if>
+        <if test="merchandiseWrapper.pageSize != null and merchandiseWrapper.offset != null">
+            LIMIT #{merchandiseWrapper.pageSize} OFFSET #{merchandiseWrapper.offset}
+        </if>
+    </select>
+</mapper>

@@ -9,4 +9,5 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   mapper-locations: classpath:/mapper/*.xml
-  type-aliases-package: com.chenhaozhe.clothe_guru_code.model.entity
+  # 同时指定参数的包装类和返回值的实体类对应的包
+  type-aliases-package: com.chenhaozhe.clothe_guru_code.model.entity,com.chenhaozhe.clothe_guru_code.model.wrapper

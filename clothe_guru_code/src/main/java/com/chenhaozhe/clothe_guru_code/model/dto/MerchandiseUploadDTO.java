@@ -1,4 +1,4 @@
-package com.chenhaozhe.clothe_guru_code.model.entity;
+package com.chenhaozhe.clothe_guru_code.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,19 +11,13 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MerchandiseEntity {
+public class MerchandiseUploadDTO {
     private Integer merchandiseId;
     private String merchandiseName;
     private String merchandiseDescription;
     private BigDecimal lowPrice;
     private BigDecimal highPrice;
-    private String category;
-    private String material;
-    private Long belongs;
+    private String[] category;
+    private String[] material;
     private BigDecimal rating;
-    private String publishTime;
-    private Integer sales;
-    private Integer satisfaction;
-    private String mainImg;
-    private String subImg;
 }

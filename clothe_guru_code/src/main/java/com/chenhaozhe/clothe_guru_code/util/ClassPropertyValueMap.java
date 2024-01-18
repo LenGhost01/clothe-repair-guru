@@ -27,7 +27,7 @@ public class ClassPropertyValueMap {
             field.setAccessible(true); // 允许访问私有字段
             String property = CamelSnakeTranslate.convert(field.getName());
             Object value = field.get(targetObject);
-            propertyValueMap.put(field.getName(),value != null ? value.toString() : null);
+            propertyValueMap.put(property,value != null ? value.toString() : null);
         }
         return propertyValueMap;
     }

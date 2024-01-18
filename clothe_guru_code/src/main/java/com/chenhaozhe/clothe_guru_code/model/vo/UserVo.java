@@ -20,4 +20,5 @@ public class UserVo {
     private String location;
     private String lastLogin;
     private String payMesg;
+    private String avatar;
 }

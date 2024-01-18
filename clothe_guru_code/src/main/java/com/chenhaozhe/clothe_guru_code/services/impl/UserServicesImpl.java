@@ -22,7 +22,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,16 @@ public class UserServicesImpl implements UserServices {
     private UserMapper userMapper;
     @Resource
     private RedisTemplate redisTemplate;
-
+    @Value("${store.ftp.host}")
+    private String ftpHost;
+    @Value("${store.ftp.port}")
+    private String ftpPort;
+    @Value("${store.ftp.user}")
+    private String ftpUser;
+    @Value("${store.ftp.password}")
+    private String ftpPassword;
+    @Value("${store.ftp.imgPath}")
+    private String imgPath;
     @Value("${customConst.defaultPageSize}")
     private Short defaultPageSize;
     @Override
@@ -95,12 +106,28 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public String AlterUserCheckPassword(String oldPassword, UserEntity user) {
+    public String AlterUserCheckPassword(String oldPassword, UserEntity user, MultipartFile avatar) {
         UserEntity entity = userMapper.selectUserByUserId(user.getUserId());
         if(!Objects.equals(entity.getPassword(),user.getPassword())){
-            //用户输入的旧密码和数据库中的密码对应不上
-            throw new CustomInputMismatchException("密码验证错误，请重新输入旧密码！！！");
+            //用户输入的旧密码和数据库中的密码对应不上,两者都为空表示不修改密码，同样通过
+            throw new CustomInputMismatchException("密码验证错误，请查看密码是否相等！！！");
         }
+        if(!Objects.equals(avatar,null)){
+            // 用户需要对头像进行修改
+
+            try (InputStream inputStream = avatar.getInputStream()) {
+                String filename = "avatar/"+GenerateFormattedImagePath.generateNewPath(avatar.getOriginalFilename());
+
+                FTPUtil.uploadFile(ftpHost, Integer.parseInt(ftpPort), ftpUser, ftpPassword, imgPath + filename,inputStream);
+
+                user.setAvatar(filename);
+            }catch (Exception e){
+                throw new DatabaseNotChangeException("文件没有被正确上传，请联系管理员或尝试再次上传");
+            }
+
+
+        }
+
         // 不推荐使用删除再添加的方式，在高并发的场景下无法保证操作的原子性
         Integer returnState = userMapper.updateUser(user);
         if (returnState<1){

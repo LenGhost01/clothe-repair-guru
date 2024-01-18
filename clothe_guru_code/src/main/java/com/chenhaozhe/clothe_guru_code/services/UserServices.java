@@ -3,6 +3,7 @@ package com.chenhaozhe.clothe_guru_code.services;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface UserServices {
 
     void deleteUser(Long userId);
 
-    String AlterUserCheckPassword(String oldPassword, UserEntity user);
+    String AlterUserCheckPassword(String oldPassword, UserEntity user, MultipartFile avatar);
 
     UserVo getUserById(Long userId);
 

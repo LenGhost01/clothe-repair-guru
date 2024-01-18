@@ -20,4 +20,5 @@ public class UserEntity {
     private String location;
     private String lastLogin;
     private String payMesg;
+    private String avatar;
 }
