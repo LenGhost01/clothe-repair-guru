@@ -53,7 +53,7 @@ public class ApplicationServiceImpl implements ApplicationServices {
             try (InputStream inputStream = item.getInputStream()) {
                 success.set(FTPUtil.uploadFile(ftpHost, Integer.parseInt(ftpPort), user, password,
                         // 设置传输的文件编码为UTF-8格式
-                        imgPath + transportFileName, inputStream));
+                        imgPath + "certification/"+transportFileName, inputStream));
                 if(!success.get()){
                     throw new DatabaseNotChangeException("文件上传失败,请联系管理员");
                 }

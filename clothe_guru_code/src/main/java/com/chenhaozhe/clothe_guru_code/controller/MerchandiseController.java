@@ -41,13 +41,14 @@ public class MerchandiseController {
     public void updateMerchandise(@RequestPart("mainImg")MultipartFile mainImg,
                                   @RequestPart("subImg")MultipartFile[] subImg,
                                   @RequestParam("MerchandiseUpdateMsg") MerchandiseUploadDTO merchandiseUploadDTO) {
-
+        merchandiseServices.updateMerchandise(mainImg,subImg,merchandiseUploadDTO);
     }
     //TODO 添加新商品，只能由商家添加
     @GetMapping("/addMerchandise")
     public void addMerchandise(@RequestPart("mainImg")MultipartFile mainImg,
                                @RequestPart("subImg")MultipartFile[] subImg,
                                @RequestParam("MerchandiseUpdateMsg") MerchandiseInsertDTO merchandiseInsertDTO) {
+        merchandiseServices.insertNewMerchandise(mainImg,subImg,merchandiseInsertDTO);
     }
     //TODO 管理员 进行类别的增删查
     @GetMapping("/getCategory")

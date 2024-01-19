@@ -26,4 +26,29 @@
             LIMIT #{merchandiseWrapper.pageSize} OFFSET #{merchandiseWrapper.offset}
         </if>
     </select>
+    <insert id="insertMerchandise" parameterType="map">
+        insert into merchandise
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            # 这里trim的作用是在merchant语句后面生成一个括号，suffixOverrides可以去除多余的逗号，下面同理
+            <foreach item="key" index="index" collection="merchandiseMap.keySet" open="" separator="," close="">
+                ${key}
+            </foreach>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <foreach item="value" index="index" collection="merchandiseMap.values" open="" separator="," close="">
+                #{value}
+            </foreach>
+        </trim>
+    </insert>
+
+    <update id="updateMerchandise" parameterType="map">
+        update merchandise SET
+        <trim prefixOverrides=",">
+            <foreach collection="merchandiseMap" item="entry" index="key" separator=",">
+                <if test="entry.key != 'merchandise_id'">
+                    ${key} = #{entry.value}
+                </if>
+            </foreach>
+        </trim>
+    </update>
 </mapper>

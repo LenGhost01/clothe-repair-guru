@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 @Repository
@@ -31,4 +32,8 @@ public interface MerchandiseMapper {
 
     // 使用xml文件编写sql语句
     List<ViewMerchandiseEntity> getMerchandise(@Param("merchandiseWrapper")MerchandiseWrapper merchandiseWrapper);
+
+    Integer insertMerchandise(@Param("merchandiseMap")Map map);
+
+    Integer updateMerchandise(@Param("merchandiseMap")Map map);
 }

@@ -20,4 +20,7 @@ public class MerchandiseUploadDTO {
     private String[] category;
     private String[] material;
     private BigDecimal rating;
+    // 通过传输过来的主图片和副图片的uri来判断是否需要更新数据
+    private String mainImg;
+    private String[] subImg;
 }

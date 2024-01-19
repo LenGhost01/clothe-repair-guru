@@ -9,14 +9,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class MerchandiseInsertDTO{
-    private Integer merchandiseId;
+    private Long merchantId;
     private String merchandiseName;
     private String merchandiseDescription;
     private BigDecimal lowPrice;
     private BigDecimal highPrice;
     private String[] category;
     private String[] material;
-    private BigDecimal rating;
-    private Long merchantId;
-
 }
