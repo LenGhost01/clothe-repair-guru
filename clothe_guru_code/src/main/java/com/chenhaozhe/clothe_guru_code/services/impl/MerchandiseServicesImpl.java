@@ -5,6 +5,8 @@ import com.chenhaozhe.clothe_guru_code.mapper.MerchandiseMapper;
 import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseGetterDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseInsertDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseUploadDTO;
+import com.chenhaozhe.clothe_guru_code.model.entity.CategoryEntity;
+import com.chenhaozhe.clothe_guru_code.model.entity.MaterialEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.MerchandiseEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.ViewMerchandiseEntity;
 import com.chenhaozhe.clothe_guru_code.model.enums.MerchandiseKeyWordLabelEnum;
@@ -16,7 +18,6 @@ import com.chenhaozhe.clothe_guru_code.util.FTPUtil;
 import com.chenhaozhe.clothe_guru_code.util.GenerateFormattedImagePath;
 import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
-import org.apache.commons.net.ftp.FTP;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -180,6 +182,43 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
             }
         }
 
+    }
+
+    @Override
+    public List<CategoryEntity> getCategory(Integer page) {
+        Integer offset = page*defaultPageSize;
+        return merchandiseMapper.queryAllCategory(defaultPageSize,offset);
+    }
+
+    @Override
+    public List<MaterialEntity> getMaterial(Integer page) {
+        Integer offset = page*defaultPageSize;
+        return merchandiseMapper.queryAllMaterial(defaultPageSize,offset);
+    }
+
+    @Override
+    public Integer deleteCategoryById(Integer categoryId) {
+        return merchandiseMapper.deleteCategoryById(categoryId);
+    }
+
+    @Override
+    public Integer deleteMaterialById(Integer materialId) {
+        return merchandiseMapper.deleteMaterialById(materialId);
+    }
+
+    @Override
+    public Integer addCategory(String categoryName) {
+        return merchandiseMapper.insertCategory(categoryName);
+    }
+
+    @Override
+    public Integer addMaterial(String materialName, String materialDescription, BigDecimal reconstructionCoefficient) {
+        return merchandiseMapper.insertMaterial(materialName,materialDescription,reconstructionCoefficient);
+    }
+
+    @Override
+    public Integer UpdateMaterial(Integer materialId, String materialName, String materialDescription, BigDecimal reconstructionCoefficient) {
+        return merchandiseMapper.updateMaterialById(materialId,materialName,materialDescription,reconstructionCoefficient);
     }
 
     private void checkFileNotUploadException(Boolean success){
