@@ -15,7 +15,7 @@ public class MerchandiseGetterDTO {
     private String keyWord;
     private Integer keyWordLabel;
     private Integer orderLabel;
-    private String orderRule;
+    private Boolean orderRule;
     private BigDecimal lowPrice;
     private BigDecimal highPrice;
     private Integer page;
