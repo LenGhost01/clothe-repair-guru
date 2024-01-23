@@ -13,7 +13,7 @@ export default defineConfig({
     // 配置代理服务器
     proxy: {
       '/imgs': {
-        target: 'http://192.168.32.129/imgs',
+        target: 'http://192.168.32.141/images',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/imgs/, '')
       }
