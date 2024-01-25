@@ -1,6 +1,7 @@
 package com.chenhaozhe.clothe_guru_code.util;
 
 
+import com.chenhaozhe.clothe_guru_code.exception.TokenObsoleteException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -26,15 +27,15 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-//    public static Jws<Claims> checkToken(String token) {
-//        try {
-//            return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token);
-//        } catch (SignatureException e) {
-//            // 无效的签名/密钥
-//            throw new TokenObsoleteException("自动登录已失效");
-//        } catch (Exception e) {
-//            // 其他异常处理 目前将其他异常当做失效处理
-//            throw new TokenObsoleteException("自动登录已失效");
-//        }
-//    }
+    public static Jws<Claims> checkToken(String token) {
+        try {
+            return Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token);
+        } catch (SignatureException e) {
+            // 无效的签名/密钥
+            throw new TokenObsoleteException("自动登录已失效");
+        } catch (Exception e) {
+            // 其他异常处理 目前将其他异常当做失效处理
+            throw new TokenObsoleteException("自动登录已失效");
+        }
+    }
 }

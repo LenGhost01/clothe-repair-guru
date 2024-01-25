@@ -5,9 +5,13 @@ import com.chenhaozhe.clothe_guru_code.model.converter.UserConverter;
 import com.chenhaozhe.clothe_guru_code.model.dto.AlterUserDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.UserLoginMailDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.UserLoginNormalDTO;
+import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 import com.chenhaozhe.clothe_guru_code.services.UserServices;
+import com.chenhaozhe.clothe_guru_code.util.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +40,21 @@ public class UserController {
 
     @PostMapping("/loginByMail")
     public String loginByMail(@RequestBody UserLoginMailDTO mailDTO) {
+        log.info(mailDTO.toString());
         return userServices.mailCheck(mailDTO.getEmail(), mailDTO.getCaptcha());
     }
 
     @PostMapping("/loginByUsername")
     public String loginByUsername(@RequestBody UserLoginNormalDTO normalDTO) {
         return userServices.usernameAndPasswordCheck(normalDTO.getUsername(), normalDTO.getPassword());
+    }
+    @GetMapping("/loginByToken")
+    UserVo loginByToken(@RequestParam("token") String token) {
+        Jws<Claims> claimsJws = JwtTokenUtil.checkToken(token);
+        String uid = claimsJws.getPayload().getSubject();
+        UserVo userById = userServices.getUserById(Long.valueOf(uid));
+        log.info(userById.toString());
+        return userById;
     }
 
     @GetMapping("/deleteUser")
@@ -51,7 +64,7 @@ public class UserController {
 
     @GetMapping("/alterUser")
     public String alterUser(@RequestParam("userDTO") AlterUserDTO alterUserDTO,
-                            @RequestPart(required = false,value = "avatar") MultipartFile avatar) {
+                            @RequestPart(required = false, value = "avatar") MultipartFile avatar) {
         return userServices.AlterUserCheckPassword(alterUserDTO.getOldPassword(), UserConverter.convertToEntity(alterUserDTO.getUserDTO()), avatar);
     }
 
@@ -73,7 +86,18 @@ public class UserController {
     }
 
     @GetMapping("/userQuit")
-    public void userQuit(@RequestParam("uid") Long userId) {
-        userServices.userEvict(userId);
+    public void userQuit(@RequestParam("uid") String userId) {
+        log.info(userId);
+        userServices.userEvict(Long.valueOf(userId));
+    }
+
+    @GetMapping("/getUserByUsername")
+    public void getUserByUsername(@RequestParam("username") String username) {
+        userServices.getUserByUsername(username);
+    }
+
+    @GetMapping("/getUserByMail")
+    public void getUserByMail(@RequestParam("email") String email) {
+
     }
 }

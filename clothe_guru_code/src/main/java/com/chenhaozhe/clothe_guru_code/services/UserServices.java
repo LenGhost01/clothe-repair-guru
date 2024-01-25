@@ -28,4 +28,7 @@ public interface UserServices {
     List<UserVo> getAllUsers(Integer page);
 
     List<UserVo> getAllUsersByKeyWord(String keyWord, Integer page);
+
+    void getUserByUsername(String username);
+    void getUserByMail(String mail);
 }

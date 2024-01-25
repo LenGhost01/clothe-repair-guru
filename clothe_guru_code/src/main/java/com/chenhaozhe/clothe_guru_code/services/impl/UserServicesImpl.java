@@ -26,12 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
+@Slf4j
 public class UserServicesImpl implements UserServices {
     @Resource
     private UserMapper userMapper;
@@ -51,7 +49,13 @@ public class UserServicesImpl implements UserServices {
     private Short defaultPageSize;
     @Override
     public void InsertUserToDatabase(UserRegisterVo registerVo) {
+        log.info(registerVo.toString());
         // 由系统分配一个id，再去除vo对象中对应的参数。
+        String captcha = String.valueOf(redisTemplate.opsForValue().get(registerVo.getEmail()));
+        if(!Objects.equals(captcha,registerVo.getCaptcha())){
+            throw new InputMismatchException("验证码验证失败");
+        }
+
         Long id = new SnowFlake(1,1).nextId();
         Integer returnState = userMapper.insertUserToUsers(id, registerVo.getUsername(), registerVo.getPassword(), registerVo.getNickname(), registerVo.getEmail());
         if (returnState == 0){
@@ -150,6 +154,22 @@ public class UserServicesImpl implements UserServices {
         return userMapper.selectUsersLikeKeyWord(defaultPageSize,offset,"%"+keyWord+"%").stream().map(item -> UserConverter.convertToVO(item)).toList();
     }
 
+    @Override
+    public void getUserByUsername(String username) {
+        Integer userCount = userMapper.getUserByUsername(username);
+        if(userCount > 0){
+            throw new InputMismatchException("用户名已被占用");
+        }
+    }
+
+    @Override
+    public void getUserByMail(String mail) {
+        Integer userCount = userMapper.getUserByEmail(mail);
+        if(userCount > 0){
+            throw new InputMismatchException("邮箱已被占用");
+        }
+    }
+
     //↓ 下面是一些通用的方法
     public String generateUserMsgJson(UserEntity userEntity){
         UserVo userVo = UserConverter.convertToVO(userEntity);
@@ -158,7 +178,7 @@ public class UserServicesImpl implements UserServices {
         map.put("user",userVo);
         map.put("token",token);
         // 以用户的id为键，userVo为值保存在缓存中。
-        getUserById(userVo.getUserId());
+        getUserById(Long.valueOf(userVo.getUserId()));
         return JackonUtil.MapToJson(map);
     }
 

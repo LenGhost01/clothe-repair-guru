@@ -8,10 +8,12 @@ import 'animate.css'
 import 'swiper/css/bundle'
 // vue-router 路由
 import Router from './router/main.js'
+import Store from "/src/store/store.js"
 
 
 
 createApp(App)
     .use(Antd)
     .use(Router)
+    .use(Store)
     .mount('#app')

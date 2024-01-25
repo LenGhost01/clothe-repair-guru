@@ -1,0 +1,99 @@
+<script setup>
+import {ref} from "vue";
+
+const props = defineProps({
+  token: String
+})
+const columns = ref([
+  {
+    title: '时间',
+    dataIndex: 'time',
+    key: 'time',
+  },
+  {
+    title: '变化',
+    dataIndex: 'change',
+    key: 'change',
+  },
+  {
+    title: '位置',
+    dataIndex: 'address',
+    key: 'address',
+  },
+])
+
+const data = ref([
+  //数据通过token访问后台得来,一页最多分配6个数据
+  {
+    key: '1',
+    time: '2023-8-17 14:10:17',
+    change: "192.168.*.*",
+    address: '中国浙江宁波',
+  },
+  {
+    key: '2',
+    time: '2023-8-17 14:10:17',
+    change: "192.168.*.*",
+    address: '中国浙江宁波',
+  },
+  {
+    key: '3',
+    time: '2023-8-17 14:10:17',
+    change: "192.168.*.*",
+    address: '中国浙江宁波',
+  },
+  {
+    key: '4',
+    time: '2023-8-17 14:10:17',
+    change: "192.168.*.*",
+    address: '中国浙江宁波',
+  },
+  {
+    key: '5',
+    time: '2023-8-17 14:10:17',
+    change: "192.168.*.*",
+    address: '中国浙江宁波',
+  },
+  {
+    key: '6',
+    time: '2023-8-17 14:10:17',
+    change: "192.168.*.*",
+    address: '中国浙江宁波',
+  },
+])
+
+let getToken = props["token"]
+console.log("地址页面" + getToken)
+</script>
+
+<template>
+  <div class="container">
+    <a-typography-text strong style="color: #7F7F7F;font-size: 24px">登录记录</a-typography-text>
+    <a-typography-text style="color:#AAAAAA;margin-left: 0.5rem;">您最近一周的登录情况</a-typography-text>
+    <a-divider style="margin: 0.5rem"></a-divider>
+    <a-typography-text>根据登录时间，IP，地理位置，若判断为异常情况，请在核实后及时</a-typography-text>
+    <a-button type="link">修改密码</a-button>
+    <br/>
+    <div style="display: inline-block;transform: translateY(-200%)">
+      <a-typography-text>说明：</a-typography-text>
+    </div>
+    <div style="display: inline-block">
+      <a-typography-text>
+        1： 移动端登录，由于运营商是级分配IP，往往存在与时机登录地不符的情况<br>
+        2：若使用VPN或代理联网的，登陆地无法准确记录<br>
+        3：部分网络代理的服务，存在IP地址不稳定的问题
+      </a-typography-text>
+    </div>
+
+    <div class="label_container">
+      <a-table :columns="columns" :data-source="data" size="small">
+      </a-table>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.label_container{
+  margin-top: 1rem;
+}
+</style>

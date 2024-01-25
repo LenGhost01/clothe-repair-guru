@@ -204,8 +204,6 @@ div {
   height: 100%;
 }
 
-
-
 /* 通过webkit扩展修改滚动条样式仅限于chrome，safari和opera的滚动条 */
 /* 控制滚动条的宽度 */
 .scrollbar::-webkit-scrollbar{
@@ -225,5 +223,32 @@ div {
   background: #E0E0E0;
   border-radius: 10px;
 }
+.user_select_forbidden{
+  user-select: none;
+}
+.small_tip{
+  display: inline-block;
+  height: 1em;
+  width: 4px;
+  border-radius: 2px;
+  background: #02A7F0;
+}
 
+.small_tip_font_color {
+  margin-left: 1em;
+  color: #02A7F0;
+  font-size: 16px;
+}
+
+.horizontal_center{
+  text-align: center;
+}
+
+.inline_block{
+  display: inline-block;
+}
+
+.container-outer{
+  padding: 2em;
+}
 /* todo 其他浏览器设置滚动条样式 */

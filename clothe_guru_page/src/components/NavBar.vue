@@ -1,6 +1,6 @@
 <script setup>
 import {animate_controller, animate_controller_double_stage} from "../utils/AnimateSeletor.js";
-import {onMounted, reactive, ref} from "vue";
+import {markRaw, nextTick, onMounted, provide, reactive, ref, watch} from "vue";
 import {
   AppstoreAddOutlined,
   FieldTimeOutlined,
@@ -11,6 +11,12 @@ import {
   StarOutlined,
   UserOutlined
 } from "@ant-design/icons-vue";
+import RegisterComp from "./RegisterComp.vue";
+import axios from "axios";
+import {message} from "ant-design-vue";
+import LoginPanelByMail from "/src/components/loginComp/LoginPanelByMail.vue";
+import LoginPanelByPassword from "/src/components/loginComp/LoginPanelByPassword.vue";
+import store from "/src/store/store.js";
 
 onMounted(() => {
   user_display_size.width = avatar.value.size * 9
@@ -58,19 +64,149 @@ let onSearch = () => {
 }
 let avatar_animate = ref('')
 const animate_list = ref(['avatar_magnify', 'avatar_shrink', 'user_display_show', 'user_display_hidden'])
-let header_image = ref('')
+let header_image = ref('/statics/images/unlogin.png')
 let is_login = ref(false)
 let show_user_display = ref(false)
-let login = () => {
-  alert('login')
-}
+
 let register = () => {
-  alert('register')
+  register_open.value = true
 }
 let display_user_panel = ref('')
 let font_color = ref(font_color_list.unselect)
 let display_sub_user_panel = ref('')
 
+// 注册操作变量
+const register_open = ref(false)
+const register_confirm_loading = ref(false)
+const register_wrapper = reactive({})
+const register_handle = () => {
+  // 向后台请求验证用户名，并将显示进度条。
+  callRegister.value = new Date().toString()
+  nextTick(() => {
+    axios.post("/requests/user/register", register_wrapper)
+        .then(res => {
+          message.success("注册成功")
+          register_open.value = false
+          register_confirm_loading.value = false
+          clear_signal.value = new Date().toString()
+        })
+        .catch(err => {
+          message.success(err.message)
+        })
+  })
+}
+const callRegister = ref("")
+
+const registerBack = (e) => {
+  let received = JSON.parse(e)
+  register_wrapper.username = received.username
+  register_wrapper.password = received.password
+  register_wrapper.nickname = received.nickname
+  register_wrapper.email = received.email
+  register_wrapper.captcha = received.captcha
+  console.log(register_wrapper)
+}
+
+//登录功能区
+let loginPanelShowList = reactive([
+  markRaw(LoginPanelByPassword),
+  markRaw(LoginPanelByMail),
+])
+let selectedLoginPanel = ref(loginPanelShowList[0])
+const loginModelOpen = ref(false)
+const call_login = ref(new Date().toString())
+const login_wrapper = ref("")
+provide("callLogin", call_login)
+let login = () => {
+  loginModelOpen.value = true
+}
+
+const loginHandler = (e) => {
+  let receiver = JSON.parse(e)
+  login_wrapper.value = receiver
+}
+
+const loginHandlerOk = () => {
+  call_login.value = new Date().toString()
+  nextTick(() => {
+
+    if (login_wrapper.value.type === "pass") {
+      axios.post("/requests/user/loginByUsername", login_wrapper.value.pass_msg).then(res => {
+        //返回token，存放在localstorage中，更新vue store状态
+        let receiver = res.data
+        localStorage.setItem("token", receiver.token)
+        store.dispatch("updateUserState", {
+          isLogin: true,
+          user: receiver.user
+        })
+        is_login.value = true
+        header_image.value = `/imgs/${receiver.user.avatar}`
+
+        // 清理登录窗口资源，关闭窗口
+        clear_signal.value = new Date().toString()
+        loginModelOpen.value = false
+        message.success("登录成功")
+      }).catch(err => {
+        message.error(err.message)
+      })
+
+    } else if (login_wrapper.value.type === "email") {
+      console.log(login_wrapper.value.mail_msg)
+      axios.post("/requests/user/loginByMail", login_wrapper.value.mail_msg).then(res => {
+        //返回token，存放在localstorage中，更新vue store状态
+        let receiver = res.data
+        localStorage.setItem("token", receiver.token)
+        store.dispatch("updateUserState", {
+          isLogin: true,
+          user: receiver.user
+        })
+        is_login.value = true
+        header_image.value = `/imgs/${receiver.user.avatar}`
+
+        // 清理登录窗口资源，关闭窗口
+        clear_signal.value = new Date().toString()
+        loginModelOpen.value = false
+        message.success("登录成功")
+      }).catch(err => {
+        message.error(err.message)
+      })
+    }
+  })
+}
+//用户退出
+const userQuit = () => {
+  axios.get(`/requests/user/userQuit?uid=${store.state.userState.user.userId}`).then(res => {
+    // 清除公共环境
+    store.dispatch("clearUserState")
+    //清除token
+    localStorage.removeItem("token")
+    // 当前页面状态设置
+    is_login.value = false
+    header_image = '/statics/images/unlogin.png'
+    avatar_animate.value = animate_list[1]
+    clear_signal.value = new Date().toString()
+    message.success("退出成功")
+  }).catch(err => {
+    message.error(err.message)
+  })
+}
+
+//定义并发送清理信号
+const clear_signal = ref(new Date().toString())
+provide("clear", clear_signal)
+
+//页面挂载前要做的动作
+watch(() => store.state.userState, (value) => {
+  if (value.isLogin === true) {
+    header_image.value = `/imgs/${value.user.avatar}`
+    is_login.value = value.isLogin
+  }
+}, {deep: true})
+
+//跳转到个人中心
+const jumpToIndividualCenter = () => {
+  window.location.href = `${window.location.origin}/src/pages/individual_center/index.html`
+}
 </script>
 
 <template>
@@ -96,7 +232,7 @@ let display_sub_user_panel = ref('')
         </div>
       </a-col>
       <a-col :span="3">
-        <a-row class="vertical_center align-center">
+        <a-row class="vertical_center align-center" style="min-height: 52px;">
           <a-col :span="24">
             <div class="inline_block"
                  @mouseenter="is_login===true?(display_user_panel=animate_list[2],avatar_animate=animate_list[0]):display_user_panel=animate_list[2]"
@@ -154,6 +290,7 @@ let display_sub_user_panel = ref('')
                           @click=""
                           :style="{
                                color: font_color,
+
                              }"
                       >
                         <p class="select_forbidden">35</p>
@@ -190,7 +327,8 @@ let display_sub_user_panel = ref('')
                   </a-row>
                   <a-button @mouseenter=""
                             @mouseleave=""
-                            class="align-left" type="text" size="large" block>
+                            class="align-left" type="text" size="large" block
+                            @click="jumpToIndividualCenter">
                     <span><UserOutlined/> 个人中心</span>
 
                   </a-button>
@@ -243,7 +381,7 @@ let display_sub_user_panel = ref('')
                   <a-divider/>
                   <a-button @mouseenter=""
                             @mouseleave=""
-                            class="align-left" type="text" size="large" block>
+                            class="align-left" type="text" size="large" block @click="userQuit">
                     <span><PoweroffOutlined/> 退出登录</span>
                   </a-button>
                 </div>
@@ -255,7 +393,7 @@ let display_sub_user_panel = ref('')
                   margin: 30+'%',
                   transform: 'translateX(-30%)',
                     }">
-                <a-avatar ref="avatar" :size="32">
+                <a-avatar class="img_wrapper" ref="avatar" :size="32">
                   <template #icon>
                     <img :src="header_image">
                   </template>
@@ -337,8 +475,33 @@ let display_sub_user_panel = ref('')
           </div>
         </div>
       </a-col>
-
     </a-row>
+    <!-- 开启注册页面模态窗口 -->
+    <a-modal v-model:open="register_open" title="注册" :confirm-loading="register_confirm_loading"
+             @ok="register_handle"
+             ok-text="注册"
+             cancel-text="取消"
+             :body-style="{
+               height: 'auto'
+             }">
+      <!-- 注册模组，通过父子通信传输数据 -->
+      <register-comp :callRegister="callRegister" @registerBack="registerBack"></register-comp>
+    </a-modal>
+
+    <!-- 登录模态窗口 -->
+    <a-modal v-model:open="loginModelOpen" title="登录" ok-text="登录" cancel-text="取消"
+             @ok="loginHandlerOk">
+      <div class="align-center">
+        <a-button type="link" :disabled="selectedLoginPanel === loginPanelShowList[0]"
+                  @click="selectedLoginPanel=loginPanelShowList[0]">密码登录
+        </a-button>
+        <a-typography-text>|</a-typography-text>
+        <a-button type="link" :disabled="selectedLoginPanel === loginPanelShowList[1]"
+                  @click="selectedLoginPanel=loginPanelShowList[1]">邮箱登录
+        </a-button>
+      </div>
+      <component :is="selectedLoginPanel" @putUser="loginHandler"></component>
+    </a-modal>
   </div>
 
 </template>
@@ -424,5 +587,8 @@ let display_sub_user_panel = ref('')
   cursor: pointer;
 }
 
+.img_wrapper {
+  height: 64px;
+}
 
 </style>

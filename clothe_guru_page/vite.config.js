@@ -16,6 +16,16 @@ export default defineConfig({
         target: 'http://192.168.32.141/images',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/imgs/, '')
+      },
+      '/statics': {
+        target: 'http://192.168.32.141/statics',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/statics/, '')
+      },
+      '/requests': {
+        target: 'http://localhost:8090/clothe-master',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/requests/, '')
       }
     }
   },
@@ -23,6 +33,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, '/src/pages/home/index.html'),
+        administrator: path.resolve(__dirname, '/src/pages/administrator/index.html'),
+        individual_center: path.resolve(__dirname, '/src/pages/individual_center/index.html'),
       }
     }
   }

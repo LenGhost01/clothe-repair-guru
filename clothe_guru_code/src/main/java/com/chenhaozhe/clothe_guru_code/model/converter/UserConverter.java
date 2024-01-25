@@ -10,7 +10,7 @@ public class UserConverter {
             return null;
         }
         UserVo vo = UserVo.builder()
-                .userId(entity.getUserId())
+                .userId(entity.getUserId().toString())
                 .nickname(entity.getNickname())
                 .phone(entity.getPhone())
                 .payMesg(entity.getPayMesg())
