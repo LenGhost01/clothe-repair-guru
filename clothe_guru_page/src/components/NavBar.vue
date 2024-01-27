@@ -17,6 +17,8 @@ import {message} from "ant-design-vue";
 import LoginPanelByMail from "/src/components/loginComp/LoginPanelByMail.vue";
 import LoginPanelByPassword from "/src/components/loginComp/LoginPanelByPassword.vue";
 import store from "/src/store/store.js";
+import GetIpClient from "../utils/GetIpClient.js";
+import LoginMsgWrapper from "../utils/LoginMsgWrapper.js";
 
 onMounted(() => {
   user_display_size.width = avatar.value.size * 9
@@ -128,10 +130,19 @@ const loginHandler = (e) => {
 
 const loginHandlerOk = () => {
   call_login.value = new Date().toString()
-  nextTick(() => {
-
+  nextTick(async () => {
     if (login_wrapper.value.type === "pass") {
-      axios.post("/requests/user/loginByUsername", login_wrapper.value.pass_msg).then(res => {
+      await axios.post("/requests/user/loginByUsername", login_wrapper.value.pass_msg).then(res => {
+        let ipClient = GetIpClient.getIpClient();
+        let userId = res.data.user.userId
+        ipClient.then(res => {
+          //发送ip地址信息以及登录时间到服务器
+          LoginMsgWrapper.sendIpLocation(userId,res.data.ip)
+        }).catch(err => {
+          console.log(err.message)
+          message.warning("ip获取服务异常，请及时告知管理员")
+        })
+
         //返回token，存放在localstorage中，更新vue store状态
         let receiver = res.data
         localStorage.setItem("token", receiver.token)
@@ -153,6 +164,15 @@ const loginHandlerOk = () => {
     } else if (login_wrapper.value.type === "email") {
       console.log(login_wrapper.value.mail_msg)
       axios.post("/requests/user/loginByMail", login_wrapper.value.mail_msg).then(res => {
+        let ipClient = GetIpClient.getIpClient();
+        let userId = res.data.user.userId
+        ipClient.then(res => {
+          //发送ip地址信息以及登录时间到服务器
+          LoginMsgWrapper.sendIpLocation(userId,res.data.ip)
+        }).catch(err => {
+          message.warning("ip获取服务异常，请及时告知管理员")
+        })
+
         //返回token，存放在localstorage中，更新vue store状态
         let receiver = res.data
         localStorage.setItem("token", receiver.token)
@@ -162,6 +182,7 @@ const loginHandlerOk = () => {
         })
         is_login.value = true
         header_image.value = `/imgs/${receiver.user.avatar}`
+
 
         // 清理登录窗口资源，关闭窗口
         clear_signal.value = new Date().toString()
@@ -182,7 +203,7 @@ const userQuit = () => {
     localStorage.removeItem("token")
     // 当前页面状态设置
     is_login.value = false
-    header_image = '/statics/images/unlogin.png'
+    header_image.value = '/statics/images/unlogin.png'
     avatar_animate.value = animate_list[1]
     clear_signal.value = new Date().toString()
     message.success("退出成功")

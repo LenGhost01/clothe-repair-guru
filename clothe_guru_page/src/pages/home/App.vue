@@ -9,6 +9,8 @@ import {onMounted} from "vue";
 import axios from "axios";
 import {message} from "ant-design-vue";
 import store from "../../store/store.js";
+import getIpClient from "../../utils/GetIpClient.js";
+import GetIpClient from "../../utils/GetIpClient.js";
 
 onMounted(() => {
   if (localStorage.getItem("token")) {
@@ -21,7 +23,8 @@ onMounted(() => {
           })
         })
         .catch(err => {
-          message.error(err.message)
+          message.error(err.response.data)
+          localStorage.removeItem("token")
         })
   }
 })

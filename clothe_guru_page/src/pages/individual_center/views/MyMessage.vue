@@ -1,26 +1,27 @@
 <script setup>
 import {computed, onMounted, ref} from "vue";
-import dayjs from "dayjs";
 import MapContainer from "../components/MapContainer.vue";
-import store from "../store/store.js";
+import store from "/src/store/store.js";
 import {message} from "ant-design-vue";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import AvatarUploader from "../components/AvatarUploader.vue";
 import axios from "axios";
-import zhCN from 'ant-design-vue/es/locale/zh_CN';
-import 'moment/locale/zh-cn.js'
-import moment from "moment";
 
-moment.locale("zh-cn")
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+dayjs.locale('zh-cn');
+// import 'moment/dist/locale/zh-cn'
+// import moment from "moment";
+//
+// moment.locale("zh-cn")
 let userObj = ref('')
 let ping = ref(new Date().toString())
-
 onMounted(() => {
   loadUser()
-  dayjs.locale("zh-cn")
 })
 
-let loadUser = async () => {
+let loadUser = () => {
   if (store.state.userState.user) {
     userObj.value = JSON.parse(JSON.stringify(store.state.userState.user))
   } else {
@@ -31,40 +32,6 @@ let loadUser = async () => {
 const gender = ref("man")
 const dateFormat = 'YYYY-MM-DD';
 let birth = ref(dayjs(Date.toLocaleString(), dateFormat))
-const options = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
 const value = ref([]);
 
 const open = ref(false);
@@ -93,15 +60,16 @@ let emitAvatarHandler = (e) => {
 }
 
 let availableImg = computed(() => {
-  if (userObj.value.img === '' || userObj.value === '') {
-    return '/static/unlogin.png'
-  } else if (userObj.value.img.indexOf('data:image') === -1) {
-    return '/users/' + userObj.value.img
+  if (userObj.value.avatar === '' || userObj.value === '') {
+    return '/statics/unlogin.png'
+  } else if (userObj.value.avatar.indexOf('data:image') === -1) {
+    return '/imgs/' + userObj.value.avatar
   } else {
-    return userObj.value.img
+    return userObj.value.avatar
   }
 })
 
+// 获取用户当前位置信息
 const userModify = () => {
   console.log(userObj.value.id)
   // 将base64转码成安全的格式
@@ -156,7 +124,6 @@ const userModify = () => {
               </template>
             </a-button>
           </div>
-
         </a-col>
         <a-col :span="4">
           <a-typography-text>昵称</a-typography-text>
@@ -206,11 +173,11 @@ const userModify = () => {
         <a-col :span="4">绑定邮箱</a-col>
         <a-col :span="20">
           <a-typography-text style="min-width: 16em">{{
-              userObj.email === null ? "未绑定邮箱" : userObj.phone
+              userObj.email === null ? "未绑定邮箱" : userObj.email
             }}
           </a-typography-text>
           <a-button size="small" style="margin-left: 3em">{{
-              userObj.phone === null ? "添加邮箱" : "修改邮箱"
+              userObj.email === null ? "添加邮箱" : "修改邮箱"
             }}
           </a-button>
         </a-col>
@@ -254,9 +221,9 @@ const userModify = () => {
     <a-button type="primary" style="margin-top: 1em" @click="userModify">
       修改资料
     </a-button>
+
+
   </div>
-
-
 </template>
 
 <style scoped>

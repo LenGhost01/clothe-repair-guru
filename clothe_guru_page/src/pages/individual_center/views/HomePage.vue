@@ -31,7 +31,7 @@ let loginUser = computed(()=>{
 
 let avatarPath = computed(()=>{
   if (loginUser){
-    return '/users/' + loginUser.value.img
+    return `/imgs/${loginUser.value.avatar}`
   }else {
 
   }

@@ -34,11 +34,6 @@ watch(() => clearSignal.value, () => {
           <template #prefix>
             <user-outlined/>
           </template>
-          <template #suffix>
-            <a-tooltip title="用户名输入要求字母开头，允许4-16字节，允许字母数字下划线">
-              <info-circle-outlined style="color: rgba(0, 0, 0, 0.45)"/>
-            </a-tooltip>
-          </template>
         </a-input>
       </div>
       <div class="margin-top-medium">
@@ -54,5 +49,7 @@ watch(() => clearSignal.value, () => {
 
 <style scoped>
 
-
+.margin-top-medium {
+  margin-top: 10px;
+}
 </style>

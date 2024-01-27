@@ -1,4 +1,5 @@
 import {createStore} from "vuex";
+import lockFilled from "@ant-design/icons-vue/lib/icons/LockFilled.js";
 
 export default createStore({
     state() {
@@ -14,6 +15,8 @@ export default createStore({
         UPDATE_USER_STATE(status, value) {
             this.state.userState.user = value
             this.state.userState.isLogin = true
+
+
         },
         CLEAR_USER_STATE(status, value) {
             this.state.userState.user = {}
@@ -23,7 +26,9 @@ export default createStore({
     actions: {
         // 一个负责执行某个行为的对象，负责执行业务逻辑或者发送ajax请求 处理完毕后交给mutation处理
         updateUserState(context, value) {
+
             if (value.isLogin === true) {
+
                 context.commit('UPDATE_USER_STATE', value.user)
             }
         },

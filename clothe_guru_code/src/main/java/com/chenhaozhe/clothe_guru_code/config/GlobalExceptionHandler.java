@@ -2,6 +2,7 @@ package com.chenhaozhe.clothe_guru_code.config;
 
 import com.chenhaozhe.clothe_guru_code.exception.CustomInputMismatchException;
 import com.chenhaozhe.clothe_guru_code.exception.DatabaseNotChangeException;
+import com.chenhaozhe.clothe_guru_code.exception.TokenObsoleteException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,6 +46,15 @@ public class GlobalExceptionHandler {
     public List<String> exceptionHandler(DatabaseNotChangeException cex){
         List<String> errorMessage = new ArrayList<>();
         errorMessage.add(cex.getMessage());
+        return errorMessage;
+    }
+
+    @ExceptionHandler(TokenObsoleteException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public List<String> exceptionHandler(TokenObsoleteException toe){
+        List<String> errorMessage = new ArrayList<>();
+        errorMessage.add(toe.getMessage());
         return errorMessage;
     }
 }

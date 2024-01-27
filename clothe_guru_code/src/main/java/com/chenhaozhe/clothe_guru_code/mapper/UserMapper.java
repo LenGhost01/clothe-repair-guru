@@ -7,6 +7,7 @@ import com.chenhaozhe.clothe_guru_code.util.DynaSQLProviderBuilder;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -57,6 +58,13 @@ public interface UserMapper {
             select count(user_id) from users where username = #{username}
             """)
     Integer getUserByUsername(@Param("username") String username);
+
+    @Insert("""
+            insert user_login_record(user_id,login_ip,login_location,login_time)
+            values(#{userId},#{host},#{location},#{time});
+            """)
+    Integer insertUserLoginRecord(@Param("userId")Long userId,@Param("host")String host,@Param("location")String location,
+                                  @Param("time") LocalDateTime time);
 
     @Select("""
             select count(user_id) from users where email=#{email}

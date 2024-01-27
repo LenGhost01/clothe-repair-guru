@@ -20,4 +20,7 @@ public class UserDTO {
     private String location;
     private String lastLogin;
     private String payMesg;
+    private String avatar;
+    private String gender;
+    private String safetyQuestion;
 }

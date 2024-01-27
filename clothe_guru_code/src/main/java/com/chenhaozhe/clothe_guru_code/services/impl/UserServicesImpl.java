@@ -26,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -167,6 +169,15 @@ public class UserServicesImpl implements UserServices {
         Integer userCount = userMapper.getUserByEmail(mail);
         if(userCount > 0){
             throw new InputMismatchException("邮箱已被占用");
+        }
+    }
+
+    @Override
+    public void insertUserLoginRecord(String host, String location, String time, String userId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Integer res = userMapper.insertUserLoginRecord(Long.parseLong(userId), host, location, LocalDateTime.parse(time, formatter));
+        if(res < 1){
+            throw new DatabaseNotChangeException("数据未能成功插入数据库");
         }
     }
 

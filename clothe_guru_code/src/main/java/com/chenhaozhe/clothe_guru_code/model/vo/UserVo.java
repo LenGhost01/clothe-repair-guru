@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class UserVo {
     private String userId;
     private String username;
-    private String password;
+    private Boolean passwordExists;
     private String nickname;
     private String phone;
     private String email;
@@ -21,4 +21,6 @@ public class UserVo {
     private String lastLogin;
     private String payMesg;
     private String avatar;
+    private String gender;
+    private String safetyQuestion;
 }

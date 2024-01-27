@@ -98,6 +98,13 @@ public class UserController {
 
     @GetMapping("/getUserByMail")
     public void getUserByMail(@RequestParam("email") String email) {
+        userServices.getUserByMail(email);
+    }
 
+    @GetMapping("/putUserLoginMsg")
+    public void putUserLoginMsg(@RequestParam("host")String host,@RequestParam("location")String location,
+                                @RequestParam("time")String time,@RequestParam("userId")String userId){
+        log.info("{},{},{},{}",host,location,time,userId);
+        userServices.insertUserLoginRecord(host,location,time,userId);
     }
 }

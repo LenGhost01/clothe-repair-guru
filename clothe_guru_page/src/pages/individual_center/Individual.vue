@@ -1,15 +1,13 @@
 <script setup>
-import {computed, onBeforeUnmount, onMounted, reactive, ref} from 'vue';
+import {onBeforeUnmount, onMounted, reactive, ref, watch} from 'vue';
 import router from "./routers/main.js";
 import emitter from "/src/utils/EventBus.js";
+import {LogoutOutlined, PoweroffOutlined} from "@ant-design/icons-vue";
+import store from "/src/store/store.js";
+import axios from "axios";
 import {message} from "ant-design-vue";
-import {PoweroffOutlined,LogoutOutlined} from "@ant-design/icons-vue";
-import store from "./store/store.js";
-import zhCN from 'ant-design-vue/es/locale/zh_CN';
-import 'moment/locale/zh-cn.js'
-import moment from "moment";
-import {useRoute, useRouter} from "vue-router";
-moment.locale("zh-cn")
+import {useRoute} from "vue-router";
+
 
 const onCollapse = (collapsed, type) => {
 
@@ -19,6 +17,7 @@ const onBreakpoint = broken => {
 };
 const selectedKeys = ref([0]);
 let pushToTargetPage = (page, ...msg) => {
+
   if (msg.length === 0)
     router.push({path: page})
   else {
@@ -71,71 +70,95 @@ onMounted(() => {
   let token = localStorage.getItem("token")
   if (token) {
     // 如果token存在，则向后端发送请求，获取数据
+    axios.get(`/requests/user/loginByToken?token=${token}`)
+        .then(res => {
+          console.log(res.data)
+          store.dispatch("updateUserState", {
+            isLogin: true,
+            user: res.data,
+          })
+        })
+        .catch(err => {
+          message.error(err.response.data)
+          localStorage.removeItem("token")
+          setTimeout(() => {
+            returnIndex()
+          }, 2000)
 
+        })
   }
+
+  // 获取本机ip地址
+  axios.get("https://api.ipify.org?format=json").then((res) => {
+    localStorage.setItem("localIp", res.data.ip)
+  })
   //防止页面刷新后还留在其他页面。在页面挂载完毕后将页面调整到首页
   router.push("/home")
 })
 
-const avatarPath = computed(() => {
-  return "/users/" + store.state.userState.user.img
-})
+const avatarPath = ref("")
 
-const returnIndex = ()=>{
-  window.location.href = '/'
+const returnIndex = () => {
+  window.location.href = `${window.location.origin}/src/pages/home/index.html`
 }
+
+watch(() => store.state.userState.user, (value) => {
+  console.log(value)
+  avatarPath.value = `/imgs/${value.avatar}`
+}, {deep: true})
+
+onBeforeUnmount(() => {
+  localStorage.removeItem("localIp")
+})
 </script>
 
 <template>
-  测试页面
-<!--  <a-config-provider :locale="zhCN">-->
-<!--    <div class="container">-->
-<!--      <a-layout :style="{height : intViewportHeight+'px'}">-->
-<!--        <a-layout-sider-->
-<!--            breakpoint="lg"-->
-<!--            collapsed-width="0"-->
-<!--            @collapse="onCollapse"-->
-<!--            @breakpoint="onBreakpoint"-->
-<!--        >-->
-<!--          <div class="logo user_select_forbidden">-->
-<!--            <a-typography-title style="color: #5FB878" :level="3">个人中心</a-typography-title>-->
-<!--          </div>-->
-<!--          <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">-->
-<!--            <a-menu-item v-for="(operation,index) in operationSet" :key="index" @click="pushToTargetPage(operation.to)">-->
-<!--              <span class="nav-text">{{ operation.name }}</span>-->
-<!--            </a-menu-item>-->
-<!--          </a-menu>-->
-<!--        </a-layout-sider>-->
-<!--        <a-layout>-->
-<!--          <a-layout-header :style="{ background: '#fff', padding: 0 , position:'relative', zIndex:4}">-->
-<!--            <div class="avatar-wrapper" @mouseenter="selectAnimate=animate_list[0]"-->
-<!--                 @mouseleave="selectAnimate=animate_list[1]">-->
-<!--              <a-avatar :size="32" class="avatar" wrap :src="avatarPath">-->
-<!--              </a-avatar>-->
-<!--              <div class="operator-wrapper" :class="selectAnimate">-->
-<!--                <a-button type="text" size="large" @click="" block>-->
-<!--                  <span><PoweroffOutlined/> 退出登录</span>-->
-<!--                </a-button>-->
-<!--                <a-button type="text" size="large" @click="returnIndex" block>-->
-<!--                  <span><LogoutOutlined /> 返回主页</span>-->
-<!--                </a-button>-->
-<!--              </div>-->
-<!--            </div>-->
+    <div class="container">
+      <a-layout :style="{height : intViewportHeight+'px'}">
+        <a-layout-sider
+            breakpoint="lg"
+            collapsed-width="0"
+            @collapse="onCollapse"
+            @breakpoint="onBreakpoint"
+        >
+          <div class="logo user_select_forbidden">
+            <a-typography-title style="color: #5FB878" :level="3">个人中心</a-typography-title>
+          </div>
+          <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
+            <a-menu-item v-for="(operation,index) in operationSet" :key="index" @click="pushToTargetPage(operation.to)">
+              <span class="nav-text">{{ operation.name }}</span>
+            </a-menu-item>
+          </a-menu>
+        </a-layout-sider>
+        <a-layout>
+          <a-layout-header :style="{ background: '#fff', padding: 0 , position:'relative', zIndex:4}">
+            <div class="avatar-wrapper" @mouseenter="selectAnimate=animate_list[0]"
+                 @mouseleave="selectAnimate=animate_list[1]">
+              <a-avatar :size="32" class="avatar" wrap :src="avatarPath">
+              </a-avatar>
+              <div class="operator-wrapper" :class="selectAnimate">
+                <a-button type="text" size="large" @click="" block>
+                  <span><PoweroffOutlined/> 退出登录</span>
+                </a-button>
+                <a-button type="text" size="large" @click="returnIndex" block>
+                  <span><LogoutOutlined/> 返回主页</span>
+                </a-button>
+              </div>
+            </div>
 
-<!--          </a-layout-header>-->
-<!--          <a-layout-content :style="{ margin: '24px 16px 0' }">-->
-<!--            <div :style="{ padding: '24px', background: '#fff',-->
-<!--            height: 'auto'}">-->
-<!--              <router-view :key="useRoute().fullPath"></router-view>-->
-<!--            </div>-->
-<!--          </a-layout-content>-->
-<!--          <a-layout-footer style="text-align: center">-->
-<!--            Ant Design ©2018 Created by Ant UED-->
-<!--          </a-layout-footer>-->
-<!--        </a-layout>-->
-<!--      </a-layout>-->
-<!--    </div>-->
-<!--  </a-config-provider>-->
+          </a-layout-header>
+          <a-layout-content :style="{ margin: '24px 16px 0' }">
+            <div :style="{ padding: '24px', background: '#fff',
+            height: 'auto'}">
+              <router-view :key="useRoute().fullPath"></router-view>
+            </div>
+          </a-layout-content>
+          <a-layout-footer style="text-align: center">
+            Ant Design ©2018 Created by Ant UED
+          </a-layout-footer>
+        </a-layout>
+      </a-layout>
+    </div>
 </template>
 
 <style scoped>
@@ -209,7 +232,8 @@ const returnIndex = ()=>{
   visibility: hidden !important;
   opacity: 0;
 }
-.operator-wrapper :deep(.ant-btn){
+
+.operator-wrapper :deep(.ant-btn) {
 
 }
 </style>

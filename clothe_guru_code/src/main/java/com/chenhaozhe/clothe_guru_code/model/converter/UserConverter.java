@@ -4,6 +4,8 @@ import com.chenhaozhe.clothe_guru_code.model.dto.UserDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 
+import java.util.Objects;
+
 public class UserConverter {
     public static UserVo convertToVO(UserEntity entity) {
         if (entity == null) {
@@ -18,8 +20,10 @@ public class UserConverter {
                 .receiver(entity.getReceiver())
                 .email(entity.getEmail())
                 .username(entity.getUsername())
-                .password(null) //对密码擦除
+                .passwordExists(!Objects.equals(entity.getPassword(),null)) //只需返回密码存不存在
                 .avatar(entity.getAvatar())
+                .gender(entity.getGender())
+                .safetyQuestion(entity.getSafetyQuestion())
                 .build();
         return vo;
     }
@@ -39,6 +43,9 @@ public class UserConverter {
                 .location(dto.getLocation())
                 .lastLogin(dto.getLastLogin())
                 .payMesg(dto.getPayMesg())
+                .avatar(dto.getAvatar())
+                .gender(dto.getGender())
+                .safetyQuestion(dto.getSafetyQuestion())
                 .build();
         return entity;
     }

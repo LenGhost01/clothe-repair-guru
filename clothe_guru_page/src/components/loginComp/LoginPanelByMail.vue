@@ -81,5 +81,7 @@ let sendCheckCode = (mail) => {
 </template>
 
 <style scoped>
-
+.margin-top-medium {
+  margin-top: 10px;
+}
 </style>

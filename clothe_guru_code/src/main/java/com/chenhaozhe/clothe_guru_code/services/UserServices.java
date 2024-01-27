@@ -31,4 +31,6 @@ public interface UserServices {
 
     void getUserByUsername(String username);
     void getUserByMail(String mail);
+
+    void insertUserLoginRecord(String host,String location,String time,String userId);
 }
