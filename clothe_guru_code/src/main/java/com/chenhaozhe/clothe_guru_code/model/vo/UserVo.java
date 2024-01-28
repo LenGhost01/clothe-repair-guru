@@ -23,4 +23,5 @@ public class UserVo {
     private String avatar;
     private String gender;
     private String safetyQuestion;
+    private String merchantId;
 }

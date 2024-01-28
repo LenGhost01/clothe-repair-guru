@@ -2,6 +2,7 @@ package com.chenhaozhe.clothe_guru_code.mapper;
 
 import com.chenhaozhe.clothe_guru_code.model.entity.ApplicationsEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
+import com.chenhaozhe.clothe_guru_code.model.entity.UserRecordEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 import com.chenhaozhe.clothe_guru_code.util.DynaSQLProviderBuilder;
 import org.apache.ibatis.annotations.*;
@@ -70,6 +71,16 @@ public interface UserMapper {
             select count(user_id) from users where email=#{email}
             """)
     Integer getUserByEmail(@Param("email") String email);
+
+    @Select("""
+            select count(record_id) from user_login_record where user_id = #{userId};
+            """)
+    Integer getUserRecordCount(@Param("userId")Long userId);
+
+    @Select("""
+            select * from user_login_record where user_id=#{userId} order by login_time DESC limit #{limit} offset #{offset}
+            """)
+    List<UserRecordEntity> getUserRecord(@Param("userId")Long userId,@Param("limit")Integer limit,@Param("offset")Integer offset);
     @UpdateProvider(type = DynaSQLProviderBuilder.class,method = "updateUser")
     Integer updateUser(@Param("user")UserEntity user);
 

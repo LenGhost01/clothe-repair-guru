@@ -4,10 +4,9 @@ import {markRaw, nextTick, onMounted, provide, reactive, ref, watch} from "vue";
 import {
   AppstoreAddOutlined,
   FieldTimeOutlined,
+  IdcardFilled,
   NotificationOutlined,
   PoweroffOutlined,
-  RightOutlined,
-  SisternodeOutlined,
   StarOutlined,
   UserOutlined
 } from "@ant-design/icons-vue";
@@ -137,7 +136,7 @@ const loginHandlerOk = () => {
         let userId = res.data.user.userId
         ipClient.then(res => {
           //发送ip地址信息以及登录时间到服务器
-          LoginMsgWrapper.sendIpLocation(userId,res.data.ip)
+          LoginMsgWrapper.sendIpLocation(userId, res.data.ip)
         }).catch(err => {
           console.log(err.message)
           message.warning("ip获取服务异常，请及时告知管理员")
@@ -168,7 +167,7 @@ const loginHandlerOk = () => {
         let userId = res.data.user.userId
         ipClient.then(res => {
           //发送ip地址信息以及登录时间到服务器
-          LoginMsgWrapper.sendIpLocation(userId,res.data.ip)
+          LoginMsgWrapper.sendIpLocation(userId, res.data.ip)
         }).catch(err => {
           message.warning("ip获取服务异常，请及时告知管理员")
         })
@@ -227,6 +226,11 @@ watch(() => store.state.userState, (value) => {
 //跳转到个人中心
 const jumpToIndividualCenter = () => {
   window.location.href = `${window.location.origin}/src/pages/individual_center/index.html`
+}
+
+//跳转到申请页面，采用打开一个新页面的方式
+const jumpToBecomeMerchantPage = () => {
+  window.open(`${window.location.origin}/src/pages/merchant_application/index.html`)
 }
 </script>
 
@@ -296,7 +300,7 @@ const jumpToIndividualCenter = () => {
                    :style="
                {
                 'width':user_display_size.width+'px',
-                'height':user_display_size.height+'px',
+                'height': 'auto',
                 'left':-user_display_size.width/4+'px',
                 'margin-top':25+'%'
                 }">
@@ -356,48 +360,58 @@ const jumpToIndividualCenter = () => {
                   <a-button @mouseenter=""
                             @mouseleave=""
                             class="align-left" type="text" size="large" block>
-                    <span><AppstoreAddOutlined/> 商品管理</span>
+                    <span><AppstoreAddOutlined/> 订单管理</span>
                   </a-button>
-                  <a-button @mouseenter="display_sub_user_panel=animate_list[2]"
-                            @mouseleave="display_sub_user_panel=animate_list[3]"
+                  <!-- 暂时废弃 -->
+                  <!--   <a-button @mouseenter="display_sub_user_panel=animate_list[2]"-->
+                  <!--             @mouseleave="display_sub_user_panel=animate_list[3]"-->
+                  <!--             class="align-left" type="text" size="large" block>-->
+                  <!--               <span>-->
+                  <!--                 <SisternodeOutlined/>-->
+                  <!--                 更多服务-->
+                  <!--                 <span :style="{-->
+                  <!--                  'margin-left': 80+'%',-->
+                  <!--                 }"><RightOutlined/></span>-->
+                  <!--               </span>-->
+                  <!--     <div class="user_display"-->
+                  <!--          :class="display_sub_user_panel"-->
+                  <!--          :style="{-->
+                  <!--                 'width': 100 + '%',-->
+                  <!--                 'height': 380 + '%',-->
+                  <!--                 'top':0,-->
+                  <!--                 'left':90+'%',-->
+                  <!--            }">-->
+                  <!--       <div :style="{margin:10+'px'}">-->
+                  <!--         <a-button @mouseenter=""-->
+                  <!--                   @mouseleave=""-->
+                  <!--                   class="align-left" type="text" size="large" block>-->
+                  <!--           <span><UserOutlined/> 快递查询</span>-->
+                  <!--         </a-button>-->
+                  <!--         <br>-->
+                  <!--         <a-button @mouseenter=""-->
+                  <!--                   @mouseleave=""-->
+                  <!--                   class="align-left" type="text" size="large" block>-->
+                  <!--           <span><UserOutlined/> 订单中心</span>-->
+
+                  <!--         </a-button>-->
+                  <!--         <br>-->
+                  <!--         <a-button @mouseenter=""-->
+                  <!--                   @mouseleave=""-->
+                  <!--                   class="align-left" type="text" size="large" block>-->
+                  <!--           <span><UserOutlined/> 还没想好</span>-->
+
+                  <!--         </a-button>-->
+                  <!--       </div>-->
+                  <!--     </div>-->
+                  <!--   </a-button>-->
+                  <a-button v-show="store.state.userState.user.merchantId === null" @click="jumpToBecomeMerchantPage"
                             class="align-left" type="text" size="large" block>
-                              <span>
-                                <SisternodeOutlined/>
-                                更多服务
-                                <span :style="{
-                                 'margin-left': 80+'%',
-                                }"><RightOutlined/></span>
-                              </span>
-                    <div class="user_display"
-                         :class="display_sub_user_panel"
-                         :style="{
-                                'width': 100 + '%',
-                                'height': 380 + '%',
-                                'top':0,
-                                'left':90+'%',
-                           }">
-                      <div :style="{margin:10+'px'}">
-                        <a-button @mouseenter=""
-                                  @mouseleave=""
-                                  class="align-left" type="text" size="large" block>
-                          <span><UserOutlined/> 快递查询</span>
-                        </a-button>
-                        <br>
-                        <a-button @mouseenter=""
-                                  @mouseleave=""
-                                  class="align-left" type="text" size="large" block>
-                          <span><UserOutlined/> 订单中心</span>
-
-                        </a-button>
-                        <br>
-                        <a-button @mouseenter=""
-                                  @mouseleave=""
-                                  class="align-left" type="text" size="large" block>
-                          <span><UserOutlined/> 还没想好</span>
-
-                        </a-button>
-                      </div>
-                    </div>
+                    <span><IdcardFilled/> 成为商家</span>
+                  </a-button>
+                  <a-button v-show="store.state.userState.user.merchantId !== null" @mouseenter=""
+                            @mouseleave=""
+                            class="align-left" type="text" size="large" block>
+                    <span><IdcardFilled/> 商家中心</span>
                   </a-button>
                   <a-divider/>
                   <a-button @mouseenter=""

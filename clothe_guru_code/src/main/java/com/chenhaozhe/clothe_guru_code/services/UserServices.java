@@ -1,6 +1,7 @@
 package com.chenhaozhe.clothe_guru_code.services;
 
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordAndCountVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,4 +34,7 @@ public interface UserServices {
     void getUserByMail(String mail);
 
     void insertUserLoginRecord(String host,String location,String time,String userId);
+
+    UserRecordAndCountVo getUserRecords(Long userId,Integer page);
+
 }

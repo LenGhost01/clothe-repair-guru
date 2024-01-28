@@ -6,6 +6,7 @@ import com.chenhaozhe.clothe_guru_code.model.dto.AlterUserDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.UserLoginMailDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.UserLoginNormalDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordAndCountVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 import com.chenhaozhe.clothe_guru_code.services.UserServices;
@@ -104,7 +105,14 @@ public class UserController {
     @GetMapping("/putUserLoginMsg")
     public void putUserLoginMsg(@RequestParam("host")String host,@RequestParam("location")String location,
                                 @RequestParam("time")String time,@RequestParam("userId")String userId){
-        log.info("{},{},{},{}",host,location,time,userId);
         userServices.insertUserLoginRecord(host,location,time,userId);
     }
+
+    @GetMapping("/getUserLoginMsg")
+    public UserRecordAndCountVo getUserLoginMsg(@RequestParam("userId")String userId,@RequestParam("page")Integer page){
+        log.info("用户id:{},请求页码:{}",userId,page);
+        return userServices.getUserRecords(Long.valueOf(userId), page);
+    }
+
+
 }

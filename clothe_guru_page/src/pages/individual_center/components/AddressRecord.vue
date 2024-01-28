@@ -1,8 +1,14 @@
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref, watch} from "vue";
+import store from "/src/store/store.js";
+import axios from "axios";
+import {message} from "ant-design-vue";
 
-const props = defineProps({
-  token: String
+const recordCount = ref(0)
+const pagination = ref({
+  total : recordCount,
+  defaultPageSize : 6,
+  hideOnSinglePage : true,
 })
 const columns = ref([
   {
@@ -24,50 +30,62 @@ const columns = ref([
 
 const data = ref([
   //数据通过token访问后台得来,一页最多分配6个数据
-  {
-    key: '1',
-    time: '2023-8-17 14:10:17',
-    change: "192.168.*.*",
-    address: '中国浙江宁波',
-  },
-  {
-    key: '2',
-    time: '2023-8-17 14:10:17',
-    change: "192.168.*.*",
-    address: '中国浙江宁波',
-  },
-  {
-    key: '3',
-    time: '2023-8-17 14:10:17',
-    change: "192.168.*.*",
-    address: '中国浙江宁波',
-  },
-  {
-    key: '4',
-    time: '2023-8-17 14:10:17',
-    change: "192.168.*.*",
-    address: '中国浙江宁波',
-  },
-  {
-    key: '5',
-    time: '2023-8-17 14:10:17',
-    change: "192.168.*.*",
-    address: '中国浙江宁波',
-  },
-  {
-    key: '6',
-    time: '2023-8-17 14:10:17',
-    change: "192.168.*.*",
-    address: '中国浙江宁波',
-  },
+
 ])
 
-let getToken = props["token"]
-console.log("地址页面" + getToken)
+//更改用户记录展示页面
+const pageChangeHandler = (e)=>{
+  let page = e.current
+  let loginUser = store.state.userState.user
+  axios.get(`/requests/user/getUserLoginMsg?userId=${loginUser.userId}&page=${page - 1}`)
+      .then(res => {
+        data.value = []
+        recordCount.value = res.data.count
+        for (let item in res.data.userRecordVoList) {
+          console.log(res.data.userRecordVoList[item])
+          data.value.push({
+            key: res.data.userRecordVoList[item].recordId,
+            time: res.data.userRecordVoList[item].loginTime,
+            change: res.data.userRecordVoList[item].loginIp,
+            address: res.data.userRecordVoList[item].loginLocation,
+          })
+        }
+
+      })
+      .catch(err => {
+        message.warning(err.response.data)
+      })
+}
+
+onMounted(() => {
+  // 获取到第一页的用户登录地址信息
+  let loginUser = store.state.userState.user
+  if (loginUser !== {}) {
+    axios.get(`/requests/user/getUserLoginMsg?userId=${loginUser.userId}&page=0`)
+        .then(res => {
+          console.log(res.data)
+
+          recordCount.value = res.data.count
+          for (let item in res.data.userRecordVoList) {
+            console.log(res.data.userRecordVoList[item])
+            data.value.push({
+              key: res.data.userRecordVoList[item].recordId,
+              time: res.data.userRecordVoList[item].loginTime,
+              change: res.data.userRecordVoList[item].loginIp,
+              address: res.data.userRecordVoList[item].loginLocation,
+            })
+          }
+
+        })
+        .catch(err => {
+          message.warning(err.response.data)
+        })
+  }
+})
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" style="min-height: 60vh">
     <a-typography-text strong style="color: #7F7F7F;font-size: 24px">登录记录</a-typography-text>
     <a-typography-text style="color:#AAAAAA;margin-left: 0.5rem;">您最近一周的登录情况</a-typography-text>
     <a-divider style="margin: 0.5rem"></a-divider>
@@ -86,14 +104,14 @@ console.log("地址页面" + getToken)
     </div>
 
     <div class="label_container">
-      <a-table :columns="columns" :data-source="data" size="small">
+      <a-table :columns="columns" :data-source="data"  size="small" :pagination="pagination" @change="pageChangeHandler">
       </a-table>
     </div>
   </div>
 </template>
 
 <style scoped>
-.label_container{
+.label_container {
   margin-top: 1rem;
 }
 </style>

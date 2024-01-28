@@ -46,10 +46,6 @@ let operationSet = reactive([
     to: '/records'
   },
   {
-    name: '上传作品',
-    to: '/upload'
-  },
-  {
     name: '用户注销',
     to: '/revoked'
   },

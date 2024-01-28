@@ -2,6 +2,8 @@ package com.chenhaozhe.clothe_guru_code.model.converter;
 
 import com.chenhaozhe.clothe_guru_code.model.dto.UserDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
+import com.chenhaozhe.clothe_guru_code.model.entity.UserRecordEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
 
 import java.util.Objects;
@@ -24,6 +26,7 @@ public class UserConverter {
                 .avatar(entity.getAvatar())
                 .gender(entity.getGender())
                 .safetyQuestion(entity.getSafetyQuestion())
+                .merchantId(entity.getHasMerchant()==null?null:entity.getHasMerchant().toString())
                 .build();
         return vo;
     }
@@ -48,5 +51,17 @@ public class UserConverter {
                 .safetyQuestion(dto.getSafetyQuestion())
                 .build();
         return entity;
+    }
+
+    public static UserRecordVo convertUserRecordEntityToVo(UserRecordEntity entity){
+        if(entity == null){
+            return null;
+        }
+        return UserRecordVo.builder()
+                .recordId(entity.getRecordId())
+                .loginIp(entity.getLoginIp())
+                .loginLocation(entity.getLoginLocation())
+                .loginTime(entity.getLoginTime())
+                .build();
     }
 }

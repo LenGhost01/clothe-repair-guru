@@ -14,7 +14,12 @@ public class ApplicationsEntity {
     private Long userId;
     private String applyTime;
     private String merchantName;
-    private String registerMesg;
     private Short auditState;
     private String auditFeedback;
+    private String address;
+    private String phone;
+    private String email;
+    private String certification;
+    private String introduce;
+
 }

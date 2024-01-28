@@ -23,4 +23,5 @@ public class UserEntity {
     private String avatar;
     private String gender;
     private String safetyQuestion;
+    private Long hasMerchant;
 }
