@@ -230,7 +230,7 @@ const jumpToIndividualCenter = () => {
 
 //跳转到申请页面，采用打开一个新页面的方式
 const jumpToBecomeMerchantPage = () => {
-  window.open(`${window.location.origin}/src/pages/merchant_application/index.html`)
+  window.open(`${window.location.origin}/src/pages/merchant_application/index.html?userId=${store.state.userState.user.userId}`)
 }
 </script>
 

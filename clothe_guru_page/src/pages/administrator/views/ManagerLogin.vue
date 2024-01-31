@@ -1,6 +1,8 @@
 <script setup>
 import {reactive, ref} from "vue";
 import {message} from "ant-design-vue";
+import axios from "axios";
+import router from "../routers/main.js";
 let visible = ref(false)
 let error_msg = ref('')
 const cssParams = reactive({
@@ -19,12 +21,17 @@ const returnToIndex = ()=>{
 
 const managerCheck = ()=>{
   //todo 根据结果显示提示并跳转或留在本界面
-  if(managerLoginDataSet.mUsername === "admin" && managerLoginDataSet.mPassword === "123456"){
-    // 登录成功后，将token存储在localStorage中，跳转到管理员主页
-  }else{
-    // 登录失败，显示错误提示信息
-   message.error('您的账号或者密码填写错误！！！',3)
-  }
+  axios.post("/requests/admin/adminLogin",{
+    adminName: managerLoginDataSet.mUsername,
+    password: managerLoginDataSet.mPassword
+  }).then(res=>{
+    // 保存在会话存储中，确保页面关闭时清除token
+    sessionStorage.setItem("admin",JSON.stringify(res.data))
+    router.push("/manager")
+  }).catch(err=>{
+    message.error('您的账号或者密码填写错误！！！',3)
+  })
+
 }
 </script>
 
@@ -78,11 +85,5 @@ const managerCheck = ()=>{
   margin-top: 1em;
   right: 0;
   margin-right: 10%;
-}
-.error_msg{
-  position: absolute;
-  top: 3em;
-  left: 25%;
-  width: 50%;
 }
 </style>

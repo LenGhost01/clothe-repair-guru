@@ -76,7 +76,7 @@ store:
     port: 21
     user: "chenhaozhe"
     password: "opr416"
-    imgPath: resources/imgs/
+    imgPath: resources/images/
 
 customConst:
   defaultPageSize: 20

@@ -12,7 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ApplicationRequestDTO {
-    private Long userId;
+    private String userId;
     private String merchantName;
-    private List<String> fileNameList;
+    private String address;
+    private String phone;
+    private String email;
+    private List<String> certificationText;
+    private String introduce;
 }

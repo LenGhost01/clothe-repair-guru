@@ -19,11 +19,12 @@ import java.util.List;
 public class ApplicationController {
     @Resource
     private ApplicationServices applicationServices;
-    @GetMapping ("/sendApplication")
-    public void sendApplication(@RequestParam("regMesg") String regMesg, @RequestPart("reqMesg")List<MultipartFile> files) {
+    @PostMapping ("/sendApplication")
+    public void sendApplication(@RequestParam("regMesg") String regMesg, @RequestPart("images")List<MultipartFile> images) {
         /* TODO 实现功能：用户发送申请请求,填写的用户信息里，会包含图片文件，需要上传到nginx服务器后，将uri封装成json对象 */
+        log.info("json文件:{},图片文件:{}",regMesg,images);
         ApplicationRequestDTO requestDTO = JackonUtil.JsonToObject(regMesg, ApplicationRequestDTO.class);
-        applicationServices.addNewApplication(requestDTO,files);
+        applicationServices.addNewApplication(requestDTO,images);
     }
 
     @GetMapping("/userQueryApplication")

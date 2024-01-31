@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 @Repository
@@ -33,9 +34,6 @@ public interface ApplicationsMapper {
     Integer UpdateApplicationsById(@Param("auditState")Short auditState,@Param("auditFeedback")String auditFeedback,
                                    @Param("applicationId")Integer applicationId);
 
-    @Insert("""
-            insert applications(user_id,merchant_name,register_mesg) values(#{userId},#{merchantName},#{registerMesg})
-            """)
-    Integer InsertApplicationByUserId(@Param("userId") Long userId,@Param("merchantName") String merchantName,
-                                      @Param("registerMesg")String registerMesg);
+    // 使用xml文件
+    Integer InsertApplicationByUserId(@Param("applicationsMap") Map<String,String> applicationsMap);
 }
