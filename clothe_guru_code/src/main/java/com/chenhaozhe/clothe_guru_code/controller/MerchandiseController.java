@@ -5,9 +5,11 @@ import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseInsertDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseUploadDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.CategoryEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.MaterialEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseAndCountVo;
 import com.chenhaozhe.clothe_guru_code.services.MerchandiseServices;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,10 +26,10 @@ public class MerchandiseController {
 
     //TODO 获取商品的集合，要求：能对商品的关键字进行筛选，根据商家位置的远近进行排序，根据折扣率，发布时间，销量，用户满意度。进行排序，还需
     // 实现针对用户选择的价格区间进行排序的手段 用户查看商品是查看商品视图
-    @GetMapping("/getMerchandiseView")
-    public void getMerchandise(MerchandiseGetterDTO merchandiseGetterDTO) {
+    @PostMapping("/getMerchandiseView")
+    public MerchandiseAndCountVo getMerchandise(@RequestBody MerchandiseGetterDTO merchandiseGetterDTO) {
         // 最后要转化成vo的格式
-        merchandiseServices.getMerchandise(merchandiseGetterDTO);
+        return merchandiseServices.getMerchandise(merchandiseGetterDTO);
     }
 
     //TODO 获取具体商品的信息并显示在页面中。
@@ -66,8 +68,9 @@ public class MerchandiseController {
     }
 
     @GetMapping("/addCategory")
-    public void addCategory(@RequestParam("cname") String cname) {
-        merchandiseServices.addCategory(cname);
+    public Integer addCategory(@RequestParam("cname") String cname,
+                            @RequestParam("alias") String alias) {
+        return merchandiseServices.addCategory(cname,alias);
     }
 
     @GetMapping("/deleteCategory")
@@ -82,10 +85,11 @@ public class MerchandiseController {
     }
 
     @GetMapping("/addMaterial")
-    public void addMaterial(@RequestParam("materialName") String materialName,
+    public Integer addMaterial(@RequestParam("materialName") String materialName,
                             @RequestParam("materialDesc") String materialDesc,
-                            @RequestParam("reconstruct") BigDecimal reconstruct) {
-        merchandiseServices.addMaterial(materialName, materialDesc, reconstruct);
+                            @RequestParam("reconstruct") String reconstruct,
+                            @RequestParam("alias")String alias) {
+       return merchandiseServices.addMaterial(materialName, materialDesc, reconstruct,alias);
     }
 
     @GetMapping("/deleteMaterial")
@@ -97,7 +101,15 @@ public class MerchandiseController {
     public void updateMaterial(@RequestParam("mid") Integer mid,
                                @RequestParam("materialName") String materialName,
                                @RequestParam("materialDesc") String materialDesc,
-                               @RequestParam("reconstruct") BigDecimal reconstruct) {
-        merchandiseServices.UpdateMaterial(mid,materialName,materialDesc,reconstruct);
+                               @RequestParam("reconstruct") String reconstruct,
+                               @RequestParam("alias") String alias) {
+        merchandiseServices.updateMaterial(mid, materialName, materialDesc, reconstruct,alias);
+    }
+
+    @GetMapping("/updateCategory")
+    public void updateCategory(@RequestParam("cid") Integer cid,
+                               @RequestParam("cName") String cName,
+                               @RequestParam("alias") String alias){
+        merchandiseServices.updateCategory(cid,cName,alias);
     }
 }

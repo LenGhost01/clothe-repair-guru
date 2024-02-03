@@ -20,7 +20,7 @@ const menuItem = reactive([
       {
         title: "商品信息",
         key: "cargo_message",
-        to: "/merchant_message",
+        to: "/merchandise_message",
       },
       {
         title: "分类信息",

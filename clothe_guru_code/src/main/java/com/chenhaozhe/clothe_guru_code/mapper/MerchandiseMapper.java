@@ -31,14 +31,24 @@ public interface MerchandiseMapper {
 
 
     @Select("""
-            select * from category limit #{size} offset #{offset}
+            select * from category
             """)
     List<CategoryEntity> queryAllCategory(@Param("size") Short size, @Param("offset") Integer offset);
 
     @Select("""
-            select * from material limit #{size} offset #{offset}
+            select category_id from category where category_name = #{name}
             """)
-    List<MaterialEntity> queryAllMaterial(@Param("size") Short size, @Param("offset") Integer offset);
+    Integer queryCategoryByName(@Param("name")String name);
+
+    @Select("""
+            select * from material
+            """)
+    List<MaterialEntity> queryAllMaterial();
+
+    @Select("""
+            select material_id from material where material_name = #{name}
+            """)
+    Integer queryMaterialByMaterialName(@Param("name")String name);
 
     @Delete("""
             delete from category where category_id=#{id}
@@ -51,31 +61,40 @@ public interface MerchandiseMapper {
     Integer deleteMaterialById(@Param("id") Integer materialId);
 
     @Insert("""
-            insert category(category_name) values(#{cname})
+            insert category(category_name,alias) values(#{cname},#{alias})
             """)
-    Integer insertCategory(@Param("cname") String cname);
+    Integer insertCategory(@Param("cname") String cname,@Param("alias") String alias);
 
     @Insert("""
-            insert material(material_name,material_description,reconstruction_coefficient)
-             values(#{materialName},#{materialDescription},#{reconstructionCoefficient})
+            insert material(material_name,material_description,reconstruction_coefficient,alias)
+             values(#{materialName},#{materialDescription},#{reconstructionCoefficient},#{alias})
             """)
     Integer insertMaterial(@Param("materialName") String materialName,
                            @Param("materialDescription") String materialDescription,
-                           @Param("reconstructionCoefficient") BigDecimal reconstructionCoefficient);
+                           @Param("reconstructionCoefficient") String reconstructionCoefficient,
+                           @Param("alias") String alias);
 
     @Update("""
             update material set material_name=#{materialName},material_description=#{materialDescription},
-            reconstruction_coefficient=#{reconstructionCoefficient} where material_id=#{mid}
+            reconstruction_coefficient=#{reconstructionCoefficient},alias=#{alias} where material_id=#{mid}
             """)
     Integer updateMaterialById(@Param("mid") Integer materialId,
                                @Param("materialName") String materialName,
                                @Param("materialDescription") String materialDescription,
-                               @Param("reconstructionCoefficient") BigDecimal reconstructionCoefficient);
+                               @Param("reconstructionCoefficient") String reconstructionCoefficient,
+                               @Param("alias") String alias);
+
+    @Update("""
+            update category set category_name=#{categoryName},alias=#{alias} where category_id=#{categoryId}
+            """)
+            Integer updateCategoryById(@Param("categoryId")Integer categoryId,
+                                       @Param("alias")String alias,
+                                       @Param("categoryName")String categoryName);
     // 使用sql生成器编写sql语句
 
     // 使用xml文件编写sql语句
     List<ViewMerchandiseEntity> getMerchandise(@Param("merchandiseWrapper") MerchandiseWrapper merchandiseWrapper);
-
+    Integer getMerchandiseCount(@Param("merchandiseWrapper") MerchandiseWrapper merchandiseWrapper);
     Integer insertMerchandise(@Param("merchandiseMap") Map<String, String> map);
 
     Integer updateMerchandise(@Param("merchandiseMap") Map<String, String> map);

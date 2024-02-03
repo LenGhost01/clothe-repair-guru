@@ -76,7 +76,10 @@ public interface UserMapper {
             select count(record_id) from user_login_record where user_id = #{userId};
             """)
     Integer getUserRecordCount(@Param("userId")Long userId);
-
+    @Select("""
+            select count(user_id) from users
+            """)
+    Integer getUserCount();
     @Select("""
             select * from user_login_record where user_id=#{userId} order by login_time DESC limit #{limit} offset #{offset}
             """)

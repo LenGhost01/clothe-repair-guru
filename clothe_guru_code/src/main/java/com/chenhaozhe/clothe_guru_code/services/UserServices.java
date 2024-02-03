@@ -4,6 +4,7 @@ import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordAndCountVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
+import com.chenhaozhe.clothe_guru_code.model.vo.UsersAndCountVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -26,9 +27,9 @@ public interface UserServices {
 
     void userEvict(Long userId);
 
-    List<UserVo> getAllUsers(Integer page);
+    UsersAndCountVo getAllUsers(Integer page);
 
-    List<UserVo> getAllUsersByKeyWord(String keyWord, Integer page);
+    UsersAndCountVo getAllUsersByKeyWord(String keyWord, Integer page);
 
     void getUserByUsername(String username);
     void getUserByMail(String mail);

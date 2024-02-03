@@ -4,6 +4,7 @@ import com.chenhaozhe.clothe_guru_code.exception.DatabaseNotChangeException;
 import com.chenhaozhe.clothe_guru_code.mapper.ApplicationsMapper;
 import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationRequestDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.ApplicationsEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.ApplicationAndCountVo;
 import com.chenhaozhe.clothe_guru_code.services.ApplicationServices;
 import com.chenhaozhe.clothe_guru_code.util.ClassPropertyValueMap;
 import com.chenhaozhe.clothe_guru_code.util.FTPUtil;
@@ -89,21 +90,36 @@ public class ApplicationServiceImpl implements ApplicationServices {
     }
 
     @Override
-    public List<ApplicationsEntity> userQueryApplications(Long userId, Integer page) {
+    public ApplicationAndCountVo userQueryApplications(Long userId, Integer page) {
         Integer offset = page * defaultPageSize;
-        return applicationsMapper.selectApplicationsByUserId(userId, defaultPageSize, offset);
+        List<ApplicationsEntity> applicationsEntities = applicationsMapper.selectApplicationsByUserId(userId, defaultPageSize, offset);
+        Integer count = applicationsMapper.selectUsersApplicationsCount(userId);
+        return ApplicationAndCountVo.builder()
+                .applicationsEntityList(applicationsEntities)
+                .count(count)
+                .build();
     }
 
     @Override
-    public List<ApplicationsEntity> adminQueryAllApplications(Integer page) {
+    public ApplicationAndCountVo adminQueryAllApplications(Integer page) {
         Integer offset = page * defaultPageSize;
-        return applicationsMapper.selectApplications(defaultPageSize, offset);
+        List<ApplicationsEntity> applicationsEntities = applicationsMapper.selectApplications(defaultPageSize, offset);
+        Integer count = applicationsMapper.selectApplicationsCount();
+        return ApplicationAndCountVo.builder()
+                .applicationsEntityList(applicationsEntities)
+                .count(count)
+                .build();
     }
 
     @Override
-    public List<ApplicationsEntity> adminQueryAllApplications(String keyWord, Integer page, String keyState) {
+    public ApplicationAndCountVo adminQueryAllApplications(String keyWord, Integer page, String keyState) {
         Integer offset = page * defaultPageSize;
-        return applicationsMapper.selectApplicationsLikeKeyWord(defaultPageSize, offset, keyState, "%" + keyWord + "%");
+        List<ApplicationsEntity> applicationsEntities = applicationsMapper.selectApplicationsLikeKeyWord(defaultPageSize, offset, keyState, "%" + keyWord + "%");
+        Integer count = applicationsMapper.selectApplicationsCount();
+        return ApplicationAndCountVo.builder()
+                .applicationsEntityList(applicationsEntities)
+                .count(count)
+                .build();
     }
 
 

@@ -7,10 +7,7 @@ import com.chenhaozhe.clothe_guru_code.mapper.UserMapper;
 import com.chenhaozhe.clothe_guru_code.model.converter.UserConverter;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserRecordEntity;
-import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordAndCountVo;
-import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordVo;
-import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
-import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
+import com.chenhaozhe.clothe_guru_code.model.vo.*;
 import com.chenhaozhe.clothe_guru_code.services.UserServices;
 import com.chenhaozhe.clothe_guru_code.util.*;
 import jakarta.annotation.Resource;
@@ -145,15 +142,25 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public List<UserVo> getAllUsers(Integer page) {
+    public UsersAndCountVo getAllUsers(Integer page) {
         Integer offset = defaultPageSize * page;
-        return userMapper.selectUsers(defaultPageSize, offset).stream().map(item -> UserConverter.convertToVO(item)).toList();
+        Integer userCount = userMapper.getUserCount();
+        List<UserVo> userVoList = userMapper.selectUsers(defaultPageSize, offset).stream().map(item -> UserConverter.convertToVO(item)).toList();
+        return UsersAndCountVo.builder()
+                .count(userCount)
+                .userVoList(userVoList)
+                .build();
     }
 
     @Override
-    public List<UserVo> getAllUsersByKeyWord(String keyWord, Integer page) {
+    public UsersAndCountVo getAllUsersByKeyWord(String keyWord, Integer page) {
         Integer offset = defaultPageSize * page;
-        return userMapper.selectUsersLikeKeyWord(defaultPageSize, offset, "%" + keyWord + "%").stream().map(item -> UserConverter.convertToVO(item)).toList();
+        Integer userCount = userMapper.getUserCount();
+        List<UserVo> userVoList = userMapper.selectUsersLikeKeyWord(defaultPageSize, offset, "%" + keyWord + "%").stream().map(item -> UserConverter.convertToVO(item)).toList();
+        return UsersAndCountVo.builder()
+                .count(userCount)
+                .userVoList(userVoList)
+                .build();
     }
 
     @Override

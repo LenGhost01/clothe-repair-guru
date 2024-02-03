@@ -15,5 +15,6 @@ public class MaterialEntity {
     private Integer materialId;
     private String materialName;
     private String materialDescription;
-    private BigDecimal reconstructCoefficient;
+    private String reconstructCoefficient;
+    private String alias;
 }

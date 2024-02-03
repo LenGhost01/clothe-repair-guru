@@ -9,6 +9,7 @@ import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRecordAndCountVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserRegisterVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.UserVo;
+import com.chenhaozhe.clothe_guru_code.model.vo.UsersAndCountVo;
 import com.chenhaozhe.clothe_guru_code.services.UserServices;
 import com.chenhaozhe.clothe_guru_code.util.JwtTokenUtil;
 import io.jsonwebtoken.Claims;
@@ -70,13 +71,13 @@ public class UserController {
     }
 
     @GetMapping("/getAllUser")
-    public List<UserVo> getAllUser(@RequestParam("page") Integer page) {
+    public UsersAndCountVo getAllUser(@RequestParam("page") Integer page) {
         return userServices.getAllUsers(page);
     }
 
     @GetMapping("/getAllUserLikeKeyWord")
-    public List<UserVo> getAllUserLikeKeyWord(@RequestParam("keyWord") String keyWord,
-                                              @RequestParam("page") Integer page) {
+    public UsersAndCountVo getAllUserLikeKeyWord(@RequestParam("keyWord") String keyWord,
+                                                 @RequestParam("page") Integer page) {
         // 关键字查询
         return userServices.getAllUsersByKeyWord(keyWord, page);
     }

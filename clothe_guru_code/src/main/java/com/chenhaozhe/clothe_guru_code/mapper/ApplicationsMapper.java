@@ -11,15 +11,24 @@ import java.util.Map;
 @Repository
 public interface ApplicationsMapper {
     @Select("""
-            select * from applications where user_id=#{userId} limit #{size} offset #{offset}
+            select * from applications_users_view where user_id=#{userId} limit #{size} offset #{offset}
             """)
     List<ApplicationsEntity> selectApplicationsByUserId(@Param("userId")Long userId,@Param("size")Short size,
                                                         @Param("offset")Integer offset);
 
     @Select("""
+            select count(application_id) from applications_users_view where user_id = #{userId}
+            """)
+    Integer selectUsersApplicationsCount(@Param("userId")Long userId);
+
+    @Select("""
             select * from applications_users_view limit #{size} offset #{offset}
             """)
     List<ApplicationsEntity> selectApplications(@Param("size")Short size, @Param("offset")Integer offset);
+    @Select("""
+            select count(application_id) from applications_users_view
+            """)
+    Integer selectApplicationsCount();
     @Select("""
             select * from applications_users_view ${keyState} like #{keyWord} limit #{size} offset #{offset}
             """)

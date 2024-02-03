@@ -5,13 +5,14 @@ import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseInsertDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseUploadDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.CategoryEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.MaterialEntity;
+import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseAndCountVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface MerchandiseServices {
-    void getMerchandise(MerchandiseGetterDTO merchandiseGetterDTO);
+    MerchandiseAndCountVo getMerchandise(MerchandiseGetterDTO merchandiseGetterDTO);
 
     void getMerchandiseById(Integer merchandiseId);
 
@@ -29,9 +30,12 @@ public interface MerchandiseServices {
 
     Integer deleteMaterialById(Integer materialId);
 
-    Integer addCategory(String categoryName);
+    Integer addCategory(String categoryName,String alias);
 
-    Integer addMaterial(String materialName, String materialDescription, BigDecimal reconstructionCoefficient);
+    Integer addMaterial(String materialName, String materialDescription, String reconstructionCoefficient,String alias);
 
-    Integer UpdateMaterial(Integer materialId, String materialName, String materialDescription, BigDecimal reconstructionCoefficient);
+    Integer updateMaterial(Integer materialId, String materialName, String materialDescription,
+                           String reconstructionCoefficient, String alias);
+
+    Integer updateCategory(Integer categoryId,String categoryName,String alias);
 }
