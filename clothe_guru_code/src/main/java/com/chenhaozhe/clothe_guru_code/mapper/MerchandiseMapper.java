@@ -20,9 +20,14 @@ public interface MerchandiseMapper {
             SELECT merchandise_id, merchandise_name,merchandise_description,low_price,high_price,category,
                             material,belongs,rating,publish_time,sales,satisfaction_rate,main_img,sub_img,merchant_name,address,payment_method
                             FROM merchant_merchandise_view
-                            where merchandise_id=#{merchandiseId}
+                            where belongs=#{merchandiseId}
+                            and (merchant_name like concat('%',#{keyword},'%') or merchandise_name like concat('%',#{keyword},'%'))
+                            limit #{limit} offset #{offset}
             """)
-    ViewMerchandiseEntity getMerchandiseById(@Param("merchandiseId") Integer merchandiseId);
+    List<ViewMerchandiseEntity> getMerchandiseById(@Param("merchandiseId") Long merchandiseId,
+                                                   @Param("keyword")String keyword,
+                                                   @Param("limit")Short limit,
+                                                   @Param("offset")Integer offset);
 
     @Delete("""
             delete from merchandise where merchandise_id = #{merchandiseId}
@@ -33,7 +38,7 @@ public interface MerchandiseMapper {
     @Select("""
             select * from category
             """)
-    List<CategoryEntity> queryAllCategory(@Param("size") Short size, @Param("offset") Integer offset);
+    List<CategoryEntity> queryAllCategory();
 
     @Select("""
             select category_id from category where category_name = #{name}
@@ -90,12 +95,17 @@ public interface MerchandiseMapper {
             Integer updateCategoryById(@Param("categoryId")Integer categoryId,
                                        @Param("alias")String alias,
                                        @Param("categoryName")String categoryName);
+
+    @Select("""
+            select count(merchandise_id) from merchant_merchandise_view where belongs = #{merchantId}
+            and (merchant_name like concat('%',#{keyword},'%') or merchandise_name like concat('%',#{keyword},'%'));
+            """)
+    Integer getMerchandiseCountByKeyAndId(@Param("merchantId")Long merchantId,@Param("keyword")String keyword);
     // 使用sql生成器编写sql语句
 
     // 使用xml文件编写sql语句
     List<ViewMerchandiseEntity> getMerchandise(@Param("merchandiseWrapper") MerchandiseWrapper merchandiseWrapper);
     Integer getMerchandiseCount(@Param("merchandiseWrapper") MerchandiseWrapper merchandiseWrapper);
     Integer insertMerchandise(@Param("merchandiseMap") Map<String, String> map);
-
     Integer updateMerchandise(@Param("merchandiseMap") Map<String, String> map);
 }

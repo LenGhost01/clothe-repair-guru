@@ -15,4 +15,20 @@
             </foreach>
         </trim>
     </insert>
+
+    <update id="updateMerchant" parameterType="map">
+        update merchant SET
+        <trim prefixOverrides=",">
+            <foreach collection="merchantMap" item="value" index="key" separator=",">
+                <if test="key != 'merchant_id'">
+                    ${key} = #{value}
+                </if>
+            </foreach>
+        </trim>
+        <foreach collection="merchantMap" item="value" index="key" separator=",">
+            <if test="key == 'merchant_id'">
+                WHERE merchant_id = #{value}
+            </if>
+        </foreach>
+    </update>
 </mapper>

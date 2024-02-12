@@ -2,6 +2,8 @@ package com.chenhaozhe.clothe_guru_code.services.impl;
 
 import com.chenhaozhe.clothe_guru_code.exception.DatabaseNotChangeException;
 import com.chenhaozhe.clothe_guru_code.mapper.ApplicationsMapper;
+import com.chenhaozhe.clothe_guru_code.model.converter.ApplicationConverter;
+import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationReplyDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationRequestDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.ApplicationsEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.ApplicationAndCountVo;
@@ -9,8 +11,10 @@ import com.chenhaozhe.clothe_guru_code.services.ApplicationServices;
 import com.chenhaozhe.clothe_guru_code.util.ClassPropertyValueMap;
 import com.chenhaozhe.clothe_guru_code.util.FTPUtil;
 import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
+import com.chenhaozhe.clothe_guru_code.util.SnowFlake;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.javassist.runtime.DotClass;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +85,7 @@ public class ApplicationServiceImpl implements ApplicationServices {
         try {
             Map<String, String> applicationsMap = ClassPropertyValueMap.getPropertyValueMapListSnackCase(applicationEntity);
             Integer res = applicationsMapper.InsertApplicationByUserId(applicationsMap);
-            if(res < 1){
+            if (res < 1) {
                 throw new DatabaseNotChangeException("文件上传失败,请联系管理员");
             }
         } catch (IllegalAccessException e) {
@@ -95,7 +99,7 @@ public class ApplicationServiceImpl implements ApplicationServices {
         List<ApplicationsEntity> applicationsEntities = applicationsMapper.selectApplicationsByUserId(userId, defaultPageSize, offset);
         Integer count = applicationsMapper.selectUsersApplicationsCount(userId);
         return ApplicationAndCountVo.builder()
-                .applicationsEntityList(applicationsEntities)
+                .applicationsEntityList(applicationsEntities.stream().map(item-> ApplicationConverter.ApplicationEntityToVo(item)).toList())
                 .count(count)
                 .build();
     }
@@ -106,7 +110,7 @@ public class ApplicationServiceImpl implements ApplicationServices {
         List<ApplicationsEntity> applicationsEntities = applicationsMapper.selectApplications(defaultPageSize, offset);
         Integer count = applicationsMapper.selectApplicationsCount();
         return ApplicationAndCountVo.builder()
-                .applicationsEntityList(applicationsEntities)
+                .applicationsEntityList(applicationsEntities.stream().map(item-> ApplicationConverter.ApplicationEntityToVo(item)).toList())
                 .count(count)
                 .build();
     }
@@ -117,14 +121,24 @@ public class ApplicationServiceImpl implements ApplicationServices {
         List<ApplicationsEntity> applicationsEntities = applicationsMapper.selectApplicationsLikeKeyWord(defaultPageSize, offset, keyState, "%" + keyWord + "%");
         Integer count = applicationsMapper.selectApplicationsCount();
         return ApplicationAndCountVo.builder()
-                .applicationsEntityList(applicationsEntities)
+                .applicationsEntityList(applicationsEntities.stream().map(item-> ApplicationConverter.ApplicationEntityToVo(item)).toList())
                 .count(count)
                 .build();
     }
 
-
     @Override
-    public void updateApplication(Integer applicationId, Short auditState, String auditFeedback) {
-        applicationsMapper.UpdateApplicationsById(auditState, auditFeedback, applicationId);
+    @Transactional
+    public void updateApplication(ApplicationReplyDTO applicationReplyDTO) {
+        log.info(applicationReplyDTO.toString());
+        Integer res = applicationsMapper.updateApplicationState(applicationReplyDTO.getApplicationId(), applicationReplyDTO.getUserId()
+                , new SnowFlake(1, 1).nextId(), applicationReplyDTO.getMerchantName(), applicationReplyDTO.getPhone(),
+                applicationReplyDTO.getEmail(), applicationReplyDTO.getAddress(), applicationReplyDTO.getIntroduce(),
+                applicationReplyDTO.getAuditState(), applicationReplyDTO.getCertification());
+
+        if(res == 0){
+            throw new DatabaseNotChangeException("数据库无变化");
+        }
+
     }
+
 }

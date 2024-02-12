@@ -1,12 +1,16 @@
 package com.chenhaozhe.clothe_guru_code.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class JackonUtil {
      private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,6 +52,20 @@ public class JackonUtil {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static <T> List<T> jsonToList(@NotNull String jsonString, Class<T> cls) {
+        try {
+            return objectMapper.readValue(jsonString, getCollectionType(List.class, cls));
+        } catch (JsonProcessingException e) {
+            String className = cls.getSimpleName();
+            log.error(" parse json [{}] to class [{}] error：{}", jsonString, className, e);
+        }
+        return null;
+    }
+
+    private static JavaType getCollectionType(Class<?> collectionClass, Class<?>... elementClasses) {
+        return objectMapper.getTypeFactory().constructParametricType(collectionClass, elementClasses);
     }
 
 }

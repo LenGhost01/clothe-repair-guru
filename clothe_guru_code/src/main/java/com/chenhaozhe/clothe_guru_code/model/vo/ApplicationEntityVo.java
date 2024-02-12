@@ -1,4 +1,4 @@
-package com.chenhaozhe.clothe_guru_code.model.entity;
+package com.chenhaozhe.clothe_guru_code.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplicationsEntity {
+public class ApplicationEntityVo {
     private Integer applicationId;
-    private Long userId;
+    private String userId;
     private String applyTime;
     private String merchantName;
     private Short auditState;

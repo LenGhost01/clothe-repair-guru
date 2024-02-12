@@ -14,7 +14,7 @@ import java.util.List;
 public interface MerchandiseServices {
     MerchandiseAndCountVo getMerchandise(MerchandiseGetterDTO merchandiseGetterDTO);
 
-    void getMerchandiseById(Integer merchandiseId);
+    MerchandiseAndCountVo getMerchandiseById(Long merchandiseId, String keyword, Integer page);
 
     Integer deleteMerchandise(Integer merchandiseId);
 

@@ -232,6 +232,10 @@ const jumpToIndividualCenter = () => {
 const jumpToBecomeMerchantPage = () => {
   window.open(`${window.location.origin}/src/pages/merchant_application/index.html?userId=${store.state.userState.user.userId}`)
 }
+
+const jumpToMerchantCenter = () => {
+  window.open(`${window.location.origin}/src/pages/merchant_center/index.html?merchantId=${store.state.userState.user.merchantId}`)
+}
 </script>
 
 <template>
@@ -408,8 +412,7 @@ const jumpToBecomeMerchantPage = () => {
                             class="align-left" type="text" size="large" block>
                     <span><IdcardFilled/> 成为商家</span>
                   </a-button>
-                  <a-button v-show="store.state.userState.user.merchantId !== null" @mouseenter=""
-                            @mouseleave=""
+                  <a-button v-show="store.state.userState.user.merchantId !== null" @click="jumpToMerchantCenter"
                             class="align-left" type="text" size="large" block>
                     <span><IdcardFilled/> 商家中心</span>
                   </a-button>

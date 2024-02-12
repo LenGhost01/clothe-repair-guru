@@ -68,11 +68,16 @@
     <update id="updateMerchandise" parameterType="map">
         update merchandise SET
         <trim prefixOverrides=",">
-            <foreach collection="merchandiseMap" item="entry" index="key" separator=",">
-                <if test="entry.key != 'merchandise_id'">
-                    ${key} = #{entry.value}
+            <foreach collection="merchandiseMap" item="value" index="key" separator=",">
+                <if test="key != 'merchandise_id'">
+                    ${key} = #{value}
                 </if>
             </foreach>
         </trim>
+        <foreach collection="merchandiseMap" item="value" index="key" separator=",">
+            <if test="key == 'merchandise_id'">
+                where merchandise_id = #{value}
+            </if>
+        </foreach>
     </update>
 </mapper>

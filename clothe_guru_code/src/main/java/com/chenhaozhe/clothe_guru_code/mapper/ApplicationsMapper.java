@@ -37,12 +37,25 @@ public interface ApplicationsMapper {
 
 
     @Update("""
-            update applications set audit_state=#{auditState},audit_feedback=#{auditFeedback}
+            update applications set audit_state=#{auditState}
             where application_id=#{applicationId}
             """)
-    Integer UpdateApplicationsById(@Param("auditState")Short auditState,@Param("auditFeedback")String auditFeedback,
+    Integer UpdateApplicationsById(@Param("auditState")Short auditState,
                                    @Param("applicationId")Integer applicationId);
 
+    @Update("{CALL update_application_state(#{input_application_id}, #{input_user_id}, #{input_merchant_id}, #{input_merchant_name}, #{input_contact}, #{input_address}, #{input_merchant_description}, #{input_audit_state}, #{input_certification})}")
+    Integer updateApplicationState(
+            @Param("input_application_id") Integer inputApplicationId,
+            @Param("input_user_id") Long inputUserId,
+            @Param("input_merchant_id") Long inputMerchantId,
+            @Param("input_merchant_name") String inputMerchantName,
+            @Param("input_contact") String inputContact,
+            @Param("input_email") String inputEmail,
+            @Param("input_address") String inputAddress,
+            @Param("input_merchant_description") String inputMerchantDescription,
+            @Param("input_audit_state") Short inputAuditState,
+            @Param("input_certification") String inputCertification
+    );
     // 使用xml文件
     Integer InsertApplicationByUserId(@Param("applicationsMap") Map<String,String> applicationsMap);
 }

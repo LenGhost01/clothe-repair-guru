@@ -18,28 +18,30 @@ public interface MerchantMapper {
     @Select("""
             select merchant_id from user_merchant where user_id=#{userId})
             """)
-    Long selectMerchantIdByUserId(@Param("userId")Long userId);
+    Long selectMerchantIdByUserId(@Param("userId") Long userId);
 
     @Select("""
             select * from merchant where merchant_id = #{merchantId}
             """)
-    MerchantEntity selectMerchantByMerchantId(@Param("merchantId")Long merchantId);
+    MerchantEntity selectMerchantByMerchantId(@Param("merchantId") Long merchantId);
 
     @Delete("""
             delete from merchant where merchant_id=#{merchantId}
             """)
-    Integer deleteMerchantByMerchantId(@Param("merchantId")Long merchantId);
+    Integer deleteMerchantByMerchantId(@Param("merchantId") Long merchantId);
 
-    Integer insertMerchant(Map<String,String> propValueMap);
+    Integer insertMerchant(Map<String, String> propValueMap);
 
     // 使用动态sql
-    @SelectProvider(type = DynaSQLProviderBuilder.class,method = "getAllMerchant")
-    List<MerchantEntity> selectAllMerchant(@Param("limit")Short limit,
-                                           @Param("offset")Integer offset,
-                                           @Param("keyWord")String keyWord,
-                                           @Param("keyState")String keyState,
-                                           @Param("orderValue")String orderValue,
-                                           @Param("orderRule")Boolean orderRule);
+    @SelectProvider(type = DynaSQLProviderBuilder.class, method = "getAllMerchant")
+    List<MerchantEntity> selectAllMerchant(@Param("limit") Short limit,
+                                           @Param("offset") Integer offset,
+                                           @Param("keyWord") String keyWord,
+                                           @Param("keyState") String keyState,
+                                           @Param("orderValue") String orderValue,
+                                           @Param("orderRule") Boolean orderRule);
 
 
+    // 使用xml文件
+    Integer updateMerchant(@Param("merchantMap") Map<String,String> merchantMap);
 }

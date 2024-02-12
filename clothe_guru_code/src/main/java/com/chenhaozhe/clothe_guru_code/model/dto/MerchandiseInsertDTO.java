@@ -12,8 +12,8 @@ public class MerchandiseInsertDTO{
     private Long merchantId;
     private String merchandiseName;
     private String merchandiseDescription;
-    private BigDecimal lowPrice;
-    private BigDecimal highPrice;
+    private String lowPrice;
+    private String highPrice;
     private String[] category;
     private String[] material;
 }

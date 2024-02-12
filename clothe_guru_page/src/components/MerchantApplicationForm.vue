@@ -98,7 +98,6 @@ const submitDataSet = () => {
     certificationImages.push(item.image[0])
     certificationText.push(item.text)
   })
-  console.log(certificationImages)
   let dataFormatterJson = {
     userId: userId.value,
     merchantName: data.merchantName,
@@ -109,7 +108,6 @@ const submitDataSet = () => {
     introduce: data.introduce,
   }
 
-  console.log(dataFormatterJson)
 
   // 使用formData封装image数据
   let formData = new FormData()
@@ -171,10 +169,10 @@ onMounted(() => {
         </a-col>
         <!-- 可添加多个文件组，分别为图片名和图片本身，表现为动态增减表单 -->
         <a-col :span="24">
-          <a-typography-text>许可信息</a-typography-text>
+          <a-typography-text>证件信息</a-typography-text>
           <br>
           <div v-for="(domain,index) in data.certification" :key="domain.id" class="uploadContainer">
-            <a-input v-model:value.lazy="domain.text" placeholder="请输入许可信息..."
+            <a-input v-model:value.lazy="domain.text" placeholder="请输入证件信息..."
                      style="display: inline-block;width: 50%"></a-input>
             <a-upload class="uploadUnit" v-model:file-list="domain.image" name="avatar" action=""
                       list-type="picture-card"

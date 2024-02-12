@@ -10,6 +10,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,14 +34,14 @@ public class MerchantController {
         return merchantServices.getMerchant(page,keyWord, keyState, orderValue ,orderRule);
     }
     //商家查询属于自己的商家信息并返回
-    @GetMapping("/getMerchantByUid")
-    public MerchantVo getMerchantByUid(@RequestParam("userId")Long userId){
-        return merchantServices.getMerchantByUid(userId);
+    @GetMapping("/getMerchant")
+    public MerchantVo getMerchantByMerchantId(@RequestParam("merchantId")Long merchantId){
+        return merchantServices.getMerchantByMerchantId(merchantId);
     }
     //TODO 商家修改自己的商家信息,名称不允许改,允许修改的信息有支付方式,地址,商家描述,联系信息,证书信息
     @PostMapping("/updateMerchant")
-    public void modifyMerchant(@RequestBody ModifyMerchantDTO modifyMerchantDTO){
-        merchantServices.updateMerchant(modifyMerchantDTO);
+    public MerchantVo modifyMerchant(@RequestParam("metaData") String metaData, @RequestPart("images") List<MultipartFile> images){
+        return merchantServices.updateMerchant(metaData,images);
     }
 
     //商家注销属于自己的用户

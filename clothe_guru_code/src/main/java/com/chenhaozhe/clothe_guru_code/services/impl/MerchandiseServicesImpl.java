@@ -18,19 +18,23 @@ import com.chenhaozhe.clothe_guru_code.model.wrapper.MerchandiseWrapper;
 import com.chenhaozhe.clothe_guru_code.services.MerchandiseServices;
 import com.chenhaozhe.clothe_guru_code.util.ClassPropertyValueMap;
 import com.chenhaozhe.clothe_guru_code.util.FTPUtil;
-import com.chenhaozhe.clothe_guru_code.util.GenerateFormattedImagePath;
 import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
+@Slf4j
 public class MerchandiseServicesImpl implements MerchandiseServices {
     @Resource
     private MerchandiseMapper merchandiseMapper;
@@ -70,9 +74,25 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
     }
 
     @Override
-    public void getMerchandiseById(Integer merchandiseId) {
-        ViewMerchandiseEntity merchandiseById = merchandiseMapper.getMerchandiseById(merchandiseId);
+    public MerchandiseAndCountVo getMerchandiseById(Long merchandiseId, String keyword, Integer page) {
+        Integer offset = page * defaultPageSize;
+        List<ViewMerchandiseEntity> merchandiseById = merchandiseMapper.getMerchandiseById(merchandiseId, keyword, defaultPageSize, offset);
+        Integer merchandiseCount = merchandiseMapper.getMerchandiseCountByKeyAndId(merchandiseId, keyword);
+        List<CategoryEntity> categoryEntities = getCategory(0);
+        List<MaterialEntity> materialEntities = getMaterial(0);
         //转化成vo
+        List<MerchandiseVo> merchandiseVoList = merchandiseById.stream()
+                .map(item -> {
+                    MerchandiseVo merchandiseVo = MerchandiseConverter.merchandiseEntityToVo(item);
+                    merchandiseVo.setCategory(JackonUtil.jsonToList(item.getCategory(), Integer.class));
+                    merchandiseVo.setMaterial(JackonUtil.jsonToList(item.getMaterial(), Integer.class));
+                    return merchandiseVo;
+                })
+                .toList();
+        return MerchandiseAndCountVo.builder()
+                .merchandiseVoList(merchandiseVoList)
+                .count(merchandiseCount)
+                .build();
     }
 
     @Override
@@ -84,7 +104,7 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
     @Transactional
     public void insertNewMerchandise(MultipartFile mainImg, MultipartFile[] subImg, MerchandiseInsertDTO merchandiseInsertDTO) {
         // 对图片进行处理。并且在上传失败的时候能够自动回滚事务
-        String mainImgPath = "merchandise/" + GenerateFormattedImagePath.generateNewPath(mainImg.getOriginalFilename());
+        String mainImgPath = "merchandise/" + mainImg.getOriginalFilename();
         List<String> subImgPath = new ArrayList<String>();
 
         //写入图片
@@ -96,7 +116,7 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
             }
             Arrays.stream(subImg).forEach(item -> {
                 try {
-                    String itemPath = "merchandise/" + GenerateFormattedImagePath.generateNewPath(item.getOriginalFilename());
+                    String itemPath = "merchandise/" + item.getOriginalFilename();
                     subImgPath.add(itemPath);
                     Boolean itemSuccess = FTPUtil.uploadFile(ftpHost, ftpPort, ftpUser, ftpPassword, imgPath + itemPath, item.getInputStream());
                     if (!itemSuccess) {
@@ -117,8 +137,8 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
                 .merchandiseName(merchandiseInsertDTO.getMerchandiseName())
                 .merchandiseDescription(merchandiseInsertDTO.getMerchandiseDescription())
                 .belongs(merchandiseInsertDTO.getMerchantId())
-                .lowPrice(merchandiseInsertDTO.getLowPrice())
-                .highPrice(merchandiseInsertDTO.getHighPrice())
+                .lowPrice(new BigDecimal(merchandiseInsertDTO.getLowPrice()))
+                .highPrice(new BigDecimal(merchandiseInsertDTO.getHighPrice()))
                 .category(JackonUtil.ListToJson(List.of(merchandiseInsertDTO.getCategory())))
                 .material(JackonUtil.ListToJson(List.of(merchandiseInsertDTO.getMaterial())))
                 .build();
@@ -138,22 +158,22 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
     @Override
     public void updateMerchandise(MultipartFile mainImg, MultipartFile[] subImg, MerchandiseUploadDTO merchandiseUploadDTO) {
         String updatedMainImgPath = null;
-        List<String> updatedSubImgList = List.of(merchandiseUploadDTO.getSubImg());
+        List<String> updatedSubImgList = new ArrayList<>(List.of(merchandiseUploadDTO.getOldSubImg()));
         if (!Objects.equals(mainImg, null)) {
             //当需传输的主图非空的时候，就代表需要上传新的图片
-            updatedMainImgPath = GenerateFormattedImagePath.generateNewPath(mainImg.getOriginalFilename());
+            updatedMainImgPath = "merchandise/" + mainImg.getOriginalFilename();
             try {
                 checkFileNotUploadException(FTPUtil.uploadFile(ftpHost, ftpPort, ftpUser, ftpPassword,
-                        imgPath + "merchandise/" + updatedMainImgPath, mainImg.getInputStream()));
+                        imgPath + updatedMainImgPath, mainImg.getInputStream()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        if (subImg.length > 0) {
+        if (!Objects.equals(subImg, null)) {
             //当需传输的副图的数组非空的时候，就代表需要上传新的图片，上传图片之后的图片地址添加到修改后的副图数组之后
             Arrays.stream(subImg).forEach(item -> {
-                String updateSubItemPath = GenerateFormattedImagePath.generateNewPath(item.getOriginalFilename());
+                String updateSubItemPath = "merchandise/" + item.getOriginalFilename();
                 try {
                     checkFileNotUploadException(FTPUtil.uploadFile(ftpHost, ftpPort, ftpUser, ftpPassword,
                             imgPath + updateSubItemPath, item.getInputStream()));
@@ -162,42 +182,54 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
                 }
                 updatedSubImgList.add(updateSubItemPath);
             });
+        }
 
-            //构建实体类
-            MerchandiseEntity uploadMerchandise = MerchandiseEntity.builder()
-                    .merchandiseId(merchandiseUploadDTO.getMerchandiseId())
-                    .merchandiseName(merchandiseUploadDTO.getMerchandiseName())
-                    .merchandiseDescription(merchandiseUploadDTO.getMerchandiseDescription())
-                    .lowPrice(merchandiseUploadDTO.getLowPrice())
-                    .highPrice(merchandiseUploadDTO.getHighPrice())
-                    .category(JackonUtil.ListToJson(Arrays.asList(merchandiseUploadDTO.getCategory())))
-                    .material(JackonUtil.ListToJson(Arrays.asList(merchandiseUploadDTO.getMaterial())))
-                    .rating(merchandiseUploadDTO.getRating())
-                    .mainImg(updatedMainImgPath)
-                    .subImg(JackonUtil.ListToJson(updatedSubImgList))
-                    .build();
+        //构建实体类
+        MerchandiseEntity uploadMerchandise = MerchandiseEntity
+                .builder()
+                .merchandiseId(merchandiseUploadDTO.getMerchandiseId())
+                .merchandiseName(merchandiseUploadDTO.getMerchandiseName())
+                .merchandiseDescription(merchandiseUploadDTO.getMerchandiseDescription())
+                .lowPrice(merchandiseUploadDTO.getLowPrice())
+                .highPrice(merchandiseUploadDTO.getHighPrice())
+                .category(JackonUtil.ListToJson(Arrays.asList(merchandiseUploadDTO.getCategory())))
+                .material(JackonUtil.ListToJson(Arrays.asList(merchandiseUploadDTO.getMaterial())))
+                .rating(merchandiseUploadDTO.getRating())
+                .mainImg(updatedMainImgPath)
+                .subImg(JackonUtil.ListToJson(updatedSubImgList))
+                .build();
 
-            //格式化传输map,并调用mapper
-            try {
-                Integer updateCheck = merchandiseMapper.updateMerchandise(ClassPropertyValueMap.getPropertyValueMapListSnackCase(uploadMerchandise));
-                if (updateCheck < 1) {
-                    throw new DatabaseNotChangeException("修改数据失败，请重新尝试或联系管理员！！！");
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        //格式化传输map,并调用mapper
+        try {
+            Integer updateCheck = merchandiseMapper.updateMerchandise(ClassPropertyValueMap.getPropertyValueMapListSnackCase(uploadMerchandise));
+            if (updateCheck < 1) {
+                throw new DatabaseNotChangeException("修改数据失败，请重新尝试或联系管理员！！！");
             }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
     @Override
+    @Cacheable(key = "'category'", value = "Category")
     public List<CategoryEntity> getCategory(Integer page) {
-        Integer offset = page * defaultPageSize;
-        return merchandiseMapper.queryAllCategory(defaultPageSize, offset);
+        return merchandiseMapper.queryAllCategory();
+    }
+
+    @CachePut(key = "'category'", value = "Category")
+    public List<CategoryEntity> updateMemoryCategory() {
+        return merchandiseMapper.queryAllCategory();
     }
 
     @Override
+    @Cacheable(key = "'material'", value = "Material")
     public List<MaterialEntity> getMaterial(Integer page) {
+        return merchandiseMapper.queryAllMaterial();
+    }
+
+    @CachePut(key = "'material'", value = "Material")
+    public List<MaterialEntity> updateMemoryMaterial() {
         return merchandiseMapper.queryAllMaterial();
     }
 
@@ -223,22 +255,28 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
 
     @Override
     public Integer addMaterial(String materialName, String materialDescription, String reconstructionCoefficient, String alias) {
-        if(merchandiseMapper.insertMaterial(materialName, materialDescription, reconstructionCoefficient, alias) > 0){
+        if (merchandiseMapper.insertMaterial(materialName, materialDescription, reconstructionCoefficient, alias) > 0) {
             return merchandiseMapper.queryMaterialByMaterialName(materialName);
-        }else{
+        } else {
             throw new DatabaseNotChangeException("数据插入失败");
         }
     }
 
     @Override
     public Integer updateCategory(Integer categoryId, String categoryName, String alias) {
-        return merchandiseMapper.updateCategoryById(categoryId, alias, categoryName);
+        Integer integer = merchandiseMapper.updateCategoryById(categoryId, alias, categoryName);
+        // 更新缓存
+        updateMemoryCategory();
+        return integer;
     }
 
     @Override
     public Integer updateMaterial(Integer materialId, String materialName, String materialDescription,
                                   String reconstructionCoefficient, String alias) {
-        return merchandiseMapper.updateMaterialById(materialId, materialName, materialDescription, reconstructionCoefficient,alias);
+        Integer integer = merchandiseMapper.updateMaterialById(materialId, materialName, materialDescription, reconstructionCoefficient, alias);
+        // 更新缓存
+        updateMemoryMaterial();
+        return integer;
     }
 
     private void checkFileNotUploadException(Boolean success) {

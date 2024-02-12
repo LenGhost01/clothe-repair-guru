@@ -1,5 +1,6 @@
 package com.chenhaozhe.clothe_guru_code.services;
 
+import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationReplyDTO;
 import com.chenhaozhe.clothe_guru_code.model.dto.ApplicationRequestDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.ApplicationsEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.ApplicationAndCountVo;
@@ -14,7 +15,8 @@ public interface ApplicationServices {
     ApplicationAndCountVo userQueryApplications(Long userId, Integer page);
     ApplicationAndCountVo adminQueryAllApplications(Integer page);
     ApplicationAndCountVo adminQueryAllApplications(String keyWord,Integer page,String keyState);
-    void updateApplication(Integer applicationId,Short auditState,String auditFeedback);
+    void updateApplication(ApplicationReplyDTO applicationReplyDTO);
+
 
 
 }

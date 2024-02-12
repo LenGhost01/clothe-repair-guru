@@ -1,11 +1,14 @@
 package com.chenhaozhe.clothe_guru_code.model.vo;
 
+import com.chenhaozhe.clothe_guru_code.model.entity.CategoryEntity;
+import com.chenhaozhe.clothe_guru_code.model.entity.MaterialEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,8 +20,8 @@ public class MerchandiseVo {
     private String merchandiseDescription;
     private BigDecimal lowPrice;
     private BigDecimal highPrice;
-    private String category;
-    private String material;
+    private List<Integer> category;
+    private List<Integer> material;
     private Long belongs;
     private BigDecimal rating;
     private String publishTime;

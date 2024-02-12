@@ -1,15 +1,17 @@
-package com.chenhaozhe.clothe_guru_code.model.entity;
+package com.chenhaozhe.clothe_guru_code.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MerchantEntity {
+public class MerchantUpdateDTO {
     private Long merchantId;
     private String merchantName;
     private String contactMesg;
@@ -19,5 +21,11 @@ public class MerchantEntity {
     private String joinTime;
     private String paymentMethod;
     private String merchantDescription;
-    private String certification;
+    private List<ImageDataDTO> certification;
+    private List<String> certificationText;
+
+
+
+
+
 }

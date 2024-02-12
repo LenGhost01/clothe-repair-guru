@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MerchantVo {
-    private Long merchantId;
+    private String merchantId;
     private String merchantName;
     private String contactMesg;
+    private String email;
     private String address;
     private String registerMesg;
     private String joinTime;

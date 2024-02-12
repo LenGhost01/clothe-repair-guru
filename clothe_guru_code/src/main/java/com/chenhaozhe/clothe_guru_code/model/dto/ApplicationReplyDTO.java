@@ -11,6 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ApplicationReplyDTO {
     private Integer applicationId;
+    private Long userId;
+    private String applyTime;
+    private String merchantName;
     private Short auditState;
     private String auditFeedback;
+    private String address;
+    private String phone;
+    private String email;
+    private String certification;
+    private String introduce;
 }

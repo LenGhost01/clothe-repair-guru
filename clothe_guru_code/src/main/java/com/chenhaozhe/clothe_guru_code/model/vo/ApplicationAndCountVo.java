@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ApplicationAndCountVo {
-    private List<ApplicationsEntity> applicationsEntityList;
+    private List<ApplicationEntityVo> applicationsEntityList;
     private Integer count;
 }

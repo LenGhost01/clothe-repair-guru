@@ -7,13 +7,12 @@ import com.chenhaozhe.clothe_guru_code.model.entity.CategoryEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.MaterialEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseAndCountVo;
 import com.chenhaozhe.clothe_guru_code.services.MerchandiseServices;
+import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -32,12 +31,16 @@ public class MerchandiseController {
         return merchandiseServices.getMerchandise(merchandiseGetterDTO);
     }
 
-    //TODO 获取具体商品的信息并显示在页面中。
+    //TODO 用户获取与用户对应的商品信息
     @GetMapping("/getMerchandiseViewById")
-    public void getMerchandiseById(@RequestParam("merchandiseId") Integer merchandiseId) {
+    public MerchandiseAndCountVo getMerchandiseById(@RequestParam("merchantId") Long merchantId,
+                                   @RequestParam("keyword") String keyword,
+                                   @RequestParam("page") Integer page) {
         // 最后要转化成vo的格式
-        merchandiseServices.getMerchandiseById(merchandiseId);
+        return merchandiseServices.getMerchandiseById(merchantId, keyword, page);
     }
+
+    // todo 获取具体的商品，通过merchandise获取
 
     //TODO 删除特定的商品，用户和管理员使用同一种类型
     @GetMapping("/deleteMerchandise")
@@ -46,18 +49,20 @@ public class MerchandiseController {
     }
 
     //TODO 更改商品的所有属性，只能由商家来修改
-    @GetMapping("/updateMerchandise")
-    public void updateMerchandise(@RequestPart("mainImg") MultipartFile mainImg,
-                                  @RequestPart("subImg") MultipartFile[] subImg,
-                                  @RequestParam("MerchandiseUpdateMsg") MerchandiseUploadDTO merchandiseUploadDTO) {
+    @PostMapping("/updateMerchandise")
+    public void updateMerchandise(@RequestPart(value = "mainImage",required = false) MultipartFile mainImg,
+                                  @RequestPart(value = "subImages",required = false) MultipartFile[] subImg,
+                                  @RequestParam("metaData") String json) {
+        MerchandiseUploadDTO merchandiseUploadDTO = JackonUtil.JsonToObject(json, MerchandiseUploadDTO.class);
         merchandiseServices.updateMerchandise(mainImg, subImg, merchandiseUploadDTO);
     }
 
     //TODO 添加新商品，只能由商家添加
-    @GetMapping("/addMerchandise")
-    public void addMerchandise(@RequestPart("mainImg") MultipartFile mainImg,
-                               @RequestPart("subImg") MultipartFile[] subImg,
-                               @RequestParam("MerchandiseUpdateMsg") MerchandiseInsertDTO merchandiseInsertDTO) {
+    @PostMapping("/addMerchandise")
+    public void addMerchandise(@RequestParam("metaData") String json,
+                               @RequestPart("mainImage") MultipartFile mainImg,
+                               @RequestPart("subImages") MultipartFile[] subImg) {
+        MerchandiseInsertDTO merchandiseInsertDTO = JackonUtil.JsonToObject(json, MerchandiseInsertDTO.class);
         merchandiseServices.insertNewMerchandise(mainImg, subImg, merchandiseInsertDTO);
     }
 
@@ -69,8 +74,8 @@ public class MerchandiseController {
 
     @GetMapping("/addCategory")
     public Integer addCategory(@RequestParam("cname") String cname,
-                            @RequestParam("alias") String alias) {
-        return merchandiseServices.addCategory(cname,alias);
+                               @RequestParam("alias") String alias) {
+        return merchandiseServices.addCategory(cname, alias);
     }
 
     @GetMapping("/deleteCategory")
@@ -86,10 +91,10 @@ public class MerchandiseController {
 
     @GetMapping("/addMaterial")
     public Integer addMaterial(@RequestParam("materialName") String materialName,
-                            @RequestParam("materialDesc") String materialDesc,
-                            @RequestParam("reconstruct") String reconstruct,
-                            @RequestParam("alias")String alias) {
-       return merchandiseServices.addMaterial(materialName, materialDesc, reconstruct,alias);
+                               @RequestParam("materialDesc") String materialDesc,
+                               @RequestParam("reconstruct") String reconstruct,
+                               @RequestParam("alias") String alias) {
+        return merchandiseServices.addMaterial(materialName, materialDesc, reconstruct, alias);
     }
 
     @GetMapping("/deleteMaterial")
@@ -103,13 +108,13 @@ public class MerchandiseController {
                                @RequestParam("materialDesc") String materialDesc,
                                @RequestParam("reconstruct") String reconstruct,
                                @RequestParam("alias") String alias) {
-        merchandiseServices.updateMaterial(mid, materialName, materialDesc, reconstruct,alias);
+        merchandiseServices.updateMaterial(mid, materialName, materialDesc, reconstruct, alias);
     }
 
     @GetMapping("/updateCategory")
     public void updateCategory(@RequestParam("cid") Integer cid,
                                @RequestParam("cName") String cName,
-                               @RequestParam("alias") String alias){
-        merchandiseServices.updateCategory(cid,cName,alias);
+                               @RequestParam("alias") String alias) {
+        merchandiseServices.updateCategory(cid, cName, alias);
     }
 }

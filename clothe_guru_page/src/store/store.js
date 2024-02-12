@@ -1,5 +1,6 @@
 import {createStore} from "vuex";
 import lockFilled from "@ant-design/icons-vue/lib/icons/LockFilled.js";
+import merchantStore from "./modules/merchantStore.js";
 
 export default createStore({
     state() {
@@ -7,7 +8,8 @@ export default createStore({
             userState: {
                 isLogin: false,
                 user: {}
-            }
+            },
+
         }
     },
     mutations: {
@@ -36,5 +38,6 @@ export default createStore({
             context.commit("CLEAR_USER_STATE")
         }
     },
-    modules: {}
+    modules: {merchantStore},
+
 })
