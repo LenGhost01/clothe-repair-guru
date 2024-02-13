@@ -22,9 +22,9 @@ const asideSelection = reactive([
     key: "merchandiseDisplay",
   },
   {
-    title: "订单生成",
-    to: "/orderGenerate",
-    key: "orderGenerate"
+    title: "订单查询",
+    to: "/orderQuery",
+    key: "orderQuery"
   }
 ])
 

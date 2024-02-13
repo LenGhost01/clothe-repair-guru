@@ -21,9 +21,9 @@ const routes = [
         component: ()=>import("../views/merchandiseDisplay.vue")
     },
     {
-        path: "/orderGenerate",
-        name: "orderGenerate",
-        component: ()=>import("../views/orderGenerate.vue")
+        path: "/orderQuery",
+        name: "orderQuery",
+        component: ()=>import("../views/orderQuery.vue")
     },
 
 ]
