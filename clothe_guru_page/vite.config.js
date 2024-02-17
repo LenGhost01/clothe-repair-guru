@@ -36,6 +36,7 @@ export default defineConfig({
         administrator: path.resolve(__dirname, '/src/pages/administrator/index.html'),
         individual_center: path.resolve(__dirname, '/src/pages/individual_center/index.html'),
         merchant_application: path.resolve(__dirname, '/src/pages/merchant_application/index.html'),
+        merchandise_detail: path.resolve(__dirname, '/src/pages/merchandise_detail/index.html'),
       }
     }
   }

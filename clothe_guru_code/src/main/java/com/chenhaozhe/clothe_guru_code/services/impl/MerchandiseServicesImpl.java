@@ -54,16 +54,24 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
     @Override
     public MerchandiseAndCountVo getMerchandise(MerchandiseGetterDTO merchandiseGetterDTO) {
         Integer offset = merchandiseGetterDTO.getPage() * defaultPageSize;
+        Map<String,String> filterParamPair = new HashMap<>();
+        for(int i = 0;i<merchandiseGetterDTO.getFilterParam().length;i++){
+            filterParamPair.put(merchandiseGetterDTO.getFilterParam()[i],merchandiseGetterDTO.getFilterValue()[i]);
+        }
         MerchandiseWrapper merchandiseWrapper = MerchandiseWrapper.builder()
-                .keyWord(merchandiseGetterDTO.getKeyWord() != null ? merchandiseGetterDTO.getKeyWord() : null)
+                .keyWord(merchandiseGetterDTO.getKeyWord() != "" ? merchandiseGetterDTO.getKeyWord() : null)
                 .keyWordLabel(merchandiseGetterDTO.getKeyWordLabel() != null ? MerchandiseKeyWordLabelEnum.values()[merchandiseGetterDTO.getKeyWordLabel()].getLabel() : null)
-                .orderLabel(Objects.equals(merchandiseGetterDTO.getOrderLabel(), null) ? null : MerchandiseOrderLabelEnum.values()[merchandiseGetterDTO.getOrderLabel()].getLabel())
-                .orderRule(Objects.equals(merchandiseGetterDTO.getOrderRule(), true) ? "ASC" : "DESC")
-                .highPrice(Objects.equals(merchandiseGetterDTO.getHighPrice(), null) ? null : merchandiseGetterDTO.getHighPrice())
-                .lowPrice(Objects.equals(merchandiseGetterDTO.getLowPrice(), null) ? null : merchandiseGetterDTO.getLowPrice())
+                .orderLabel(Objects.equals(merchandiseGetterDTO.getOrderLabel(), "") ? null : String.valueOf(MerchandiseOrderLabelEnum.valueOf(merchandiseGetterDTO.getOrderLabel())))
+                .orderRule(Objects.equals(merchandiseGetterDTO.getOrderRule(), "") ? "ASC" : "DESC")
+                .highPrice(Objects.equals(merchandiseGetterDTO.getHighPrice(), "") ? null : merchandiseGetterDTO.getHighPrice())
+                .lowPrice(Objects.equals(merchandiseGetterDTO.getLowPrice(), "") ? null : merchandiseGetterDTO.getLowPrice())
+                .filterPair(filterParamPair)
                 .pageSize(defaultPageSize)
                 .offset(offset)
                 .build();
+        if (Objects.equals(merchandiseWrapper.getOrderLabel(),"PRICE")){
+            merchandiseWrapper.setOrderLabel(Objects.equals(merchandiseWrapper.getOrderRule(),"ASC")?"LOW_PRICE":"HIGH_PRICE");
+        }
         List<MerchandiseVo> list = merchandiseMapper.getMerchandise(merchandiseWrapper).stream().map(item
                 -> MerchandiseConverter.merchandiseEntityToVo(item)).toList();
         Integer count = merchandiseMapper.getMerchandiseCount(merchandiseWrapper);

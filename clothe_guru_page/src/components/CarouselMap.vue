@@ -13,11 +13,9 @@ onMounted(() => {
     direction: 'horizontal',
     loop: true,
     centeredSlides: true,
-
     pagination: {
       el: '.swiper-pagination',
     },
-
 
     navigation: {
       nextEl: '.swiper-button-next',
@@ -46,8 +44,7 @@ const clickEvent = (event) => {
   <div
       class="z-index-3 border-radius-10"
       :style="{
-    width: 80+'%',
-    transform: 'translateX(10%)',
+    width: 100+'%',
     textAlign: 'center',
     backgroundColor: 'rgba(100, 100, 255, 0.5)',
   }">
@@ -56,19 +53,11 @@ const clickEvent = (event) => {
     <div class="swiper">
       <div class="swiper-wrapper">
         <!-- todo 传输图片地址的集合，使用v-for展示图片 -->
-        <div class="swiper-slide">
-          <img class="border-radius-10" src="" @click="clickEvent($event)" loading="lazy" alt="">
-        </div>
-        <div class="swiper-slide">
-          <img class="border-radius-10" src= "" @click="clickEvent($event)" loading="lazy" alt="">
-        </div>
-        <div class="swiper-slide">
-          <img class="border-radius-10" src="" @click="clickEvent($event)" loading="lazy"  alt="">
+        <div class="swiper-slide ">
+          <img class="border-radius-10 image-style" src="" @click="clickEvent($event)" loading="lazy" alt="">
         </div>
       </div>
-
       <div class="swiper-pagination"></div>
-
       <div class="swiper-button-prev"></div>
       <div class="swiper-button-next"></div>
 
@@ -79,6 +68,8 @@ const clickEvent = (event) => {
 </template>
 
 <style scoped>
-
+.image-style{
+  min-height: 10em;
+}
 
 </style>

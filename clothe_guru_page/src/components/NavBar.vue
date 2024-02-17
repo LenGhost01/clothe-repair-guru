@@ -1,6 +1,6 @@
 <script setup>
 import {animate_controller, animate_controller_double_stage} from "../utils/AnimateSeletor.js";
-import {markRaw, nextTick, onMounted, provide, reactive, ref, watch} from "vue";
+import {markRaw, nextTick, onBeforeMount, onMounted, provide, reactive, ref, watch} from "vue";
 import {
   AppstoreAddOutlined,
   FieldTimeOutlined,
@@ -18,6 +18,7 @@ import LoginPanelByPassword from "/src/components/loginComp/LoginPanelByPassword
 import store from "/src/store/store.js";
 import GetIpClient from "../utils/GetIpClient.js";
 import LoginMsgWrapper from "../utils/LoginMsgWrapper.js";
+import emitter from "/src/utils/EventBus.js";
 
 onMounted(() => {
   user_display_size.width = avatar.value.size * 9
@@ -232,6 +233,19 @@ const jumpToIndividualCenter = () => {
 const jumpToBecomeMerchantPage = () => {
   window.open(`${window.location.origin}/src/pages/merchant_application/index.html?userId=${store.state.userState.user.userId}`)
 }
+onBeforeMount(()=>{
+  emitter.off("emitTest")
+})
+
+onMounted(()=>{
+  nextTick(()=>{
+    // 在未登录的情况下尝试访问某些页面跳出登录窗口
+    emitter.on("emitTest",(e)=>{
+      loginModelOpen.value = true
+    })
+  })
+})
+
 
 const jumpToMerchantCenter = () => {
   window.open(`${window.location.origin}/src/pages/merchant_center/index.html?merchantId=${store.state.userState.user.merchantId}`)

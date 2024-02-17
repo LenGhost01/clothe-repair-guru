@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chenhaozhe.clothe_guru_code.mapper.MerchandiseMapper">
-   <!-- 通过数据传输对象中的属性来编写动态sql查询语句 -->
+   <!-- 通过数据传输对象中的属性来编写动态sql查询语句 CDATA中的文本会被解析器忽略-->
     <select id="getMerchandise" parameterType="MerchandiseWrapper" resultType="ViewMerchandiseEntity">
         SELECT merchandise_id, merchandise_name,merchandise_description,low_price,high_price,category,
-        material,belongs,rating,publish_time,sales,satisfaction_rate,main_img,sub_img,merchant_name,address,payment_method
+        material,belongs,rating,publish_time,sales,satisfaction_rate,main_img,sub_img,merchant_name,address,
+        payment_method,latitude_longitude
         FROM merchant_merchandise_view
         <where>
-            <if test="merchandiseWrapper.keyWord != null and merchandiseWrapper.keyLabel != null">
-                ${merchandiseWrapper.keyLabel} LIKE CONCAT('%', #{merchandiseWrapper.keyWord}, '%')
+            <if test="merchandiseWrapper.keyWord != null and merchandiseWrapper.keyWordLabel != null and merchandiseWrapper.keyWordLabel != ''">
+                ${merchandiseWrapper.keyWordLabel} LIKE CONCAT('%', #{merchandiseWrapper.keyWord}, '%')
             </if>
-            <choose>
-                <when test="merchandiseWrapper.lowPrice != null">
-                    AND low_price <![CDATA[ >= ]]> #{merchandiseWrapper.lowPrice}
-                </when>
-                <when test="merchandiseWrapper.highPrice != null">
-                    AND low_price <![CDATA[ <= ]]> #{merchandiseWrapper.highPrice}
-                </when>
-            </choose>
+            <if test="merchandiseWrapper.lowPrice != null and merchandiseWrapper.lowPrice != ''">
+                AND low_price <![CDATA[ >= ]]> #{merchandiseWrapper.lowPrice}
+            </if>
+            <if test="merchandiseWrapper.highPrice != null and merchandiseWrapper.highPrice != ''">
+                AND low_price <![CDATA[ <= ]]> #{merchandiseWrapper.highPrice}
+            </if>
+            <foreach collection="merchandiseWrapper.filterPair" item="value" index="key">
+                <if test="value != null and value != ''">
+                    AND ${key} like concat('%',#{value},'%')
+                </if>
+            </foreach>
         </where>
-        <if test="merchandiseWrapper.orderLabel != null and merchandiseWrapper.orderRule != null">
+        <if test="merchandiseWrapper.orderLabel != null and merchandiseWrapper.orderRule != null and merchandiseWrapper.orderLabel != ''">
             ORDER BY ${merchandiseWrapper.orderLabel} ${merchandiseWrapper.orderRule}
         </if>
         <if test="merchandiseWrapper.pageSize != null and merchandiseWrapper.offset != null">
@@ -31,17 +35,20 @@
         SELECT count(merchandise_id)
         FROM merchant_merchandise_view
         <where>
-            <if test="merchandiseWrapper.keyWord != null and merchandiseWrapper.keyLabel != null">
-                ${merchandiseWrapper.keyLabel} LIKE CONCAT('%', #{merchandiseWrapper.keyWord}, '%')
+            <if test="merchandiseWrapper.keyWord != null and merchandiseWrapper.keyWordLabel != null and merchandiseWrapper.keyWord != ''">
+                ${merchandiseWrapper.keyWordLabel} LIKE CONCAT('%', #{merchandiseWrapper.keyWord}, '%')
             </if>
-            <choose>
-                <when test="merchandiseWrapper.lowPrice != null">
-                    AND low_price <![CDATA[ >= ]]> #{merchandiseWrapper.lowPrice}
-                </when>
-                <when test="merchandiseWrapper.highPrice != null">
-                    AND low_price <![CDATA[ <= ]]> #{merchandiseWrapper.highPrice}
-                </when>
-            </choose>
+            <if test="merchandiseWrapper.lowPrice != null and merchandiseWrapper.lowPrice != ''">
+                AND low_price <![CDATA[ >= ]]> #{merchandiseWrapper.lowPrice}
+            </if>
+            <if test="merchandiseWrapper.highPrice != null and merchandiseWrapper.highPrice != ''">
+                AND low_price <![CDATA[ <= ]]> #{merchandiseWrapper.highPrice}
+            </if>
+            <foreach collection="merchandiseWrapper.filterPair" item="value" index="key">
+                <if test="value != null and value != ''">
+                    AND ${key} like concat('%',#{value},'%')
+                </if>
+            </foreach>
         </where>
         <if test="merchandiseWrapper.orderLabel != null and merchandiseWrapper.orderRule != null">
             ORDER BY ${merchandiseWrapper.orderLabel} ${merchandiseWrapper.orderRule}

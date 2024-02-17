@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +21,8 @@ public class MerchandiseWrapper {
     private String orderRule;
     private BigDecimal lowPrice;
     private BigDecimal highPrice;
+    // 筛选标签
+    private Map<String,String> filterPair;
     private Integer offset;
     private Short pageSize;
 }
