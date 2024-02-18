@@ -7,7 +7,7 @@ import AllUser from "./chatcomp/AllUser.vue"
 import Ban from "./chatcomp/Ban.vue"
 import FriendApplication from "./chatcomp/FriendApplication.vue"
 import PrivateChat from "./chatcomp/PrivateChat.vue"
-import emitter from "../../utils/EventBus.js"
+import emitter from "/src/utils/EventBus.js"
 
 const username = "测试用户名"
 const chat_component = reactive([markRaw(AllUser), markRaw(OnlineUser),markRaw(FriendApplication),markRaw(Ban),markRaw(PrivateChat)])
@@ -99,7 +99,7 @@ const call_chat_panel = (event_obj) => {
       <a-typography-text>
         私信
       </a-typography-text>
-      <div class="ps-container scrollbar">
+      <div class="ps-container scrollbar" style="height: 63vh">
         <div class="individual_content" @click="call_chat_panel($event)" v-for="i in 32">
           <a-row>
             <a-col :span="6">

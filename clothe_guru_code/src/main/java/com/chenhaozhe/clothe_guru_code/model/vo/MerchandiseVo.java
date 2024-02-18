@@ -22,7 +22,7 @@ public class MerchandiseVo {
     private BigDecimal highPrice;
     private List<Integer> category;
     private List<Integer> material;
-    private Long belongs;
+    private String belongs;
     private BigDecimal rating;
     private String publishTime;
     private Integer sales;

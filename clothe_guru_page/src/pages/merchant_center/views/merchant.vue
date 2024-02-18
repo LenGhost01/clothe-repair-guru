@@ -80,7 +80,9 @@ const submitModify = () => {
     const img = item.originFileObj
     const suffix = img.name.split('.').pop()
     const blob = new Blob([img], {type: img.type})
-    formData.append('images', blob, `image_${Date.now()}.${suffix}`)
+    let timestamp =  Date.now()
+    console.log(Date.now())
+    formData.append('images', blob, `image_${timestamp}.${suffix}`)
   })
   formData.append("metaData", JSON.stringify(queryData.value))
   axios.post("/requests/merchant/updateMerchant", formData

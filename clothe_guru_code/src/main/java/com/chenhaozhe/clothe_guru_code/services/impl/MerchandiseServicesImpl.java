@@ -15,6 +15,7 @@ import com.chenhaozhe.clothe_guru_code.model.enums.MerchandiseOrderLabelEnum;
 import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseAndCountVo;
 import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseVo;
 import com.chenhaozhe.clothe_guru_code.model.wrapper.MerchandiseWrapper;
+import com.chenhaozhe.clothe_guru_code.services.CategoryMaterialService;
 import com.chenhaozhe.clothe_guru_code.services.MerchandiseServices;
 import com.chenhaozhe.clothe_guru_code.util.ClassPropertyValueMap;
 import com.chenhaozhe.clothe_guru_code.util.FTPUtil;
@@ -38,6 +39,9 @@ import java.util.*;
 public class MerchandiseServicesImpl implements MerchandiseServices {
     @Resource
     private MerchandiseMapper merchandiseMapper;
+    @Resource
+    private CategoryMaterialService categoryMaterialService;
+
     @Value("${store.ftp.host}")
     private String ftpHost;
     @Value("${store.ftp.port}")
@@ -86,8 +90,8 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
         Integer offset = page * defaultPageSize;
         List<ViewMerchandiseEntity> merchandiseById = merchandiseMapper.getMerchandiseById(merchandiseId, keyword, defaultPageSize, offset);
         Integer merchandiseCount = merchandiseMapper.getMerchandiseCountByKeyAndId(merchandiseId, keyword);
-        List<CategoryEntity> categoryEntities = getCategory(0);
-        List<MaterialEntity> materialEntities = getMaterial(0);
+        List<CategoryEntity> categoryEntities = categoryMaterialService.getCategory(0);
+        List<MaterialEntity> materialEntities = categoryMaterialService.getMaterial(0);
         //转化成vo
         List<MerchandiseVo> merchandiseVoList = merchandiseById.stream()
                 .map(item -> {
@@ -220,71 +224,13 @@ public class MerchandiseServicesImpl implements MerchandiseServices {
     }
 
     @Override
-    @Cacheable(key = "'category'", value = "Category")
-    public List<CategoryEntity> getCategory(Integer page) {
-        return merchandiseMapper.queryAllCategory();
-    }
+    public MerchandiseVo getMerchandiseUnitById(Integer id) {
+        ViewMerchandiseEntity merchandiseUnitById = merchandiseMapper.getMerchandiseUnitById(id);
+        MerchandiseVo merchandiseVo = MerchandiseConverter.merchandiseEntityToVo(merchandiseUnitById);
+        merchandiseVo.setCategory(JackonUtil.jsonToList(merchandiseUnitById.getCategory(), Integer.class));
+        merchandiseVo.setMaterial(JackonUtil.jsonToList(merchandiseUnitById.getMaterial(), Integer.class));
 
-    @CachePut(key = "'category'", value = "Category")
-    public List<CategoryEntity> updateMemoryCategory() {
-        return merchandiseMapper.queryAllCategory();
-    }
-
-    @Override
-    @Cacheable(key = "'material'", value = "Material")
-    public List<MaterialEntity> getMaterial(Integer page) {
-        return merchandiseMapper.queryAllMaterial();
-    }
-
-    @CachePut(key = "'material'", value = "Material")
-    public List<MaterialEntity> updateMemoryMaterial() {
-        return merchandiseMapper.queryAllMaterial();
-    }
-
-    @Override
-    public Integer deleteCategoryById(Integer categoryId) {
-        return merchandiseMapper.deleteCategoryById(categoryId);
-    }
-
-    @Override
-    public Integer deleteMaterialById(Integer materialId) {
-        return merchandiseMapper.deleteMaterialById(materialId);
-    }
-
-    @Override
-    public Integer addCategory(String categoryName, String alias) {
-        if (merchandiseMapper.insertCategory(categoryName, alias) > 0) {
-            Integer selectedId = merchandiseMapper.queryCategoryByName(categoryName);
-            return selectedId;
-        } else {
-            throw new DatabaseNotChangeException("数据插入失败");
-        }
-    }
-
-    @Override
-    public Integer addMaterial(String materialName, String materialDescription, String reconstructionCoefficient, String alias) {
-        if (merchandiseMapper.insertMaterial(materialName, materialDescription, reconstructionCoefficient, alias) > 0) {
-            return merchandiseMapper.queryMaterialByMaterialName(materialName);
-        } else {
-            throw new DatabaseNotChangeException("数据插入失败");
-        }
-    }
-
-    @Override
-    public Integer updateCategory(Integer categoryId, String categoryName, String alias) {
-        Integer integer = merchandiseMapper.updateCategoryById(categoryId, alias, categoryName);
-        // 更新缓存
-        updateMemoryCategory();
-        return integer;
-    }
-
-    @Override
-    public Integer updateMaterial(Integer materialId, String materialName, String materialDescription,
-                                  String reconstructionCoefficient, String alias) {
-        Integer integer = merchandiseMapper.updateMaterialById(materialId, materialName, materialDescription, reconstructionCoefficient, alias);
-        // 更新缓存
-        updateMemoryMaterial();
-        return integer;
+        return merchandiseVo;
     }
 
     private void checkFileNotUploadException(Boolean success) {

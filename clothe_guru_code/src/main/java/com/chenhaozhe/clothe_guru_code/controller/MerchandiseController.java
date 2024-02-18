@@ -6,6 +6,8 @@ import com.chenhaozhe.clothe_guru_code.model.dto.MerchandiseUploadDTO;
 import com.chenhaozhe.clothe_guru_code.model.entity.CategoryEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.MaterialEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseAndCountVo;
+import com.chenhaozhe.clothe_guru_code.model.vo.MerchandiseVo;
+import com.chenhaozhe.clothe_guru_code.services.CategoryMaterialService;
 import com.chenhaozhe.clothe_guru_code.services.MerchandiseServices;
 import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
@@ -22,6 +24,9 @@ public class MerchandiseController {
     // 用于对商品请求的查询，包括类别和材质
     @Resource
     private MerchandiseServices merchandiseServices;
+
+    @Resource
+    private CategoryMaterialService categoryMaterialService;
 
     //TODO 获取商品的集合，要求：能对商品的关键字进行筛选，根据商家位置的远近进行排序，根据折扣率，发布时间，销量，用户满意度。进行排序，还需
     // 实现针对用户选择的价格区间进行排序的手段 用户查看商品是查看商品视图
@@ -41,6 +46,10 @@ public class MerchandiseController {
     }
 
     // todo 获取具体的商品，通过merchandise获取
+    @GetMapping("getMerchandiseUnitById")
+    public MerchandiseVo getMerchandiseUnitById(@RequestParam("id")Integer id){
+        return merchandiseServices.getMerchandiseUnitById(id);
+    }
 
     //TODO 删除特定的商品，用户和管理员使用同一种类型
     @GetMapping("/deleteMerchandise")
@@ -69,24 +78,24 @@ public class MerchandiseController {
     //TODO 管理员 进行类别的增删查
     @GetMapping("/getCategory")
     public List<CategoryEntity> getCategory(@RequestParam("page") Integer page) {
-        return merchandiseServices.getCategory(page);
+        return categoryMaterialService.getCategory(page);
     }
 
     @GetMapping("/addCategory")
     public Integer addCategory(@RequestParam("cname") String cname,
                                @RequestParam("alias") String alias) {
-        return merchandiseServices.addCategory(cname, alias);
+        return categoryMaterialService.addCategory(cname, alias);
     }
 
     @GetMapping("/deleteCategory")
     public void deleteCategory(@RequestParam("cid") Integer cid) {
-        merchandiseServices.deleteCategoryById(cid);
+        categoryMaterialService.deleteCategoryById(cid);
     }
 
     //TODO 管理员 进行材质的增删查
     @GetMapping("/getMaterial")
     public List<MaterialEntity> getMaterial(@RequestParam("page") Integer page) {
-        return merchandiseServices.getMaterial(page);
+        return categoryMaterialService.getMaterial(page);
     }
 
     @GetMapping("/addMaterial")
@@ -94,12 +103,12 @@ public class MerchandiseController {
                                @RequestParam("materialDesc") String materialDesc,
                                @RequestParam("reconstruct") String reconstruct,
                                @RequestParam("alias") String alias) {
-        return merchandiseServices.addMaterial(materialName, materialDesc, reconstruct, alias);
+        return categoryMaterialService.addMaterial(materialName, materialDesc, reconstruct, alias);
     }
 
     @GetMapping("/deleteMaterial")
     public void deleteMaterial(@RequestParam("mid") Integer mid) {
-        merchandiseServices.deleteMaterialById(mid);
+        categoryMaterialService.deleteMaterialById(mid);
     }
 
     @GetMapping("/updateMaterial")
@@ -108,13 +117,13 @@ public class MerchandiseController {
                                @RequestParam("materialDesc") String materialDesc,
                                @RequestParam("reconstruct") String reconstruct,
                                @RequestParam("alias") String alias) {
-        merchandiseServices.updateMaterial(mid, materialName, materialDesc, reconstruct, alias);
+        categoryMaterialService.updateMaterial(mid, materialName, materialDesc, reconstruct, alias);
     }
 
     @GetMapping("/updateCategory")
     public void updateCategory(@RequestParam("cid") Integer cid,
                                @RequestParam("cName") String cName,
                                @RequestParam("alias") String alias) {
-        merchandiseServices.updateCategory(cid, cName, alias);
+        categoryMaterialService.updateCategory(cid, cName, alias);
     }
 }

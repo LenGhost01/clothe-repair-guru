@@ -6,6 +6,7 @@ import {message, Modal} from 'ant-design-vue';
 import getBase64 from "/src/utils/getBase64.js";
 import axios from "axios";
 import ReadFile from "/src/utils/ReadFile.js";
+import {v4 as uuidv4} from 'uuid'
 
 const defaultGetMerchandisePath = "/requests/merchandise/getMerchandiseViewById"
 const getMerchandiseParam = ref({
@@ -122,7 +123,7 @@ const okHandle = async (mode) => {
     const img = mainImage.originFileObj
     const suffix = img.name.split('.').pop()
     const blob = new Blob([img], {type: img.type})
-    formData.append('mainImage', blob, `IMG_${Date.now()}.${suffix}`)
+    formData.append('mainImage', blob, `IMG_${uuidv4()}.${suffix}`)
 
     // 封装子图片
     subImages.forEach(item => {
@@ -130,7 +131,7 @@ const okHandle = async (mode) => {
       const img = item.originFileObj
       const suffix = img.name.split('.').pop()
       const blob = new Blob([img], {type: img.type})
-      formData.append('subImages', blob, `IMG_${Date.now()}.${suffix}`)
+      formData.append('subImages', blob, `IMG_${uuidv4()}.${suffix}`)
     })
 
     //封装其他json数据
@@ -162,16 +163,16 @@ const okHandle = async (mode) => {
     // 过滤出老图数组
     const fileNameSet = new Set(subImg.value.map(item => item.name))
     let oldSubImg = currentImages.subImg.filter(item=> fileNameSet.has(item.split('/').pop()))
-    let uploadSubImg = subImg.value.filter(item => item.uid !== -1)
+    let uploadSubImg = subImg.value.filter(item => item.uid > 0)
 
     // 使用formData传输数据
     let formData = new FormData
-    if(mainImg.value[0].uid !== -1){
+    if(mainImg.value[0].uid > 0){
       // 主图的uid 不为负数代表是新图，需要传输
       const img = mainImg.value[0].originFileObj
       const suffix = img.name.split('.').pop()
       const blob = new Blob([img], {type: img.type})
-      formData.append('mainImage', blob, `image_${Date.now()}.${suffix}`)
+      formData.append('mainImage', blob, `image_${uuidv4()}.${suffix}`)
     }
     if(uploadSubImg.length > 0){
       uploadSubImg.forEach(item => {
@@ -179,7 +180,7 @@ const okHandle = async (mode) => {
         const img = item.originFileObj
         const suffix = img.name.split('.').pop()
         const blob = new Blob([img], {type: img.type})
-        formData.append('subImages', blob, `image_${Date.now()}.${suffix}`)
+        formData.append('subImages', blob, `image_${uuidv4()}.${suffix}`)
       })
     }
     // 封装json数据
@@ -410,7 +411,7 @@ const getMerchandise = async ()=>{
           <a-typography-title :level="5">其他图片：</a-typography-title>
           <a-upload
               v-model:file-list="subImg"
-              :max-count="3"
+              :max-count="4"
               :before-upload="beforeUpload"
               list-type="picture"
               class="upload-list-inline"

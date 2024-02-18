@@ -37,6 +37,7 @@ export default defineConfig({
         individual_center: path.resolve(__dirname, '/src/pages/individual_center/index.html'),
         merchant_application: path.resolve(__dirname, '/src/pages/merchant_application/index.html'),
         merchandise_detail: path.resolve(__dirname, '/src/pages/merchandise_detail/index.html'),
+        chatroom_view: path.resolve(__dirname, '/src/pages/chatroom/index.html'),
       }
     }
   }

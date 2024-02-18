@@ -1,6 +1,6 @@
 <script setup>
 import {animate_controller, animate_controller_double_stage} from "../utils/AnimateSeletor.js";
-import {markRaw, nextTick, onBeforeMount, onMounted, provide, reactive, ref, watch} from "vue";
+import {markRaw, nextTick, onBeforeMount, onMounted, provide, reactive, ref, toRaw, watch} from "vue";
 import {
   AppstoreAddOutlined,
   FieldTimeOutlined,
@@ -45,10 +45,6 @@ const items = reactive([
     title: '店铺',
     key: 'outlets',
   },
-  {
-    title: '服务',
-    key: 'services',
-  }
 ])
 const handleMenuSelector = (item) => {
   bind_item.value = item.title
@@ -106,7 +102,6 @@ const registerBack = (e) => {
   register_wrapper.nickname = received.nickname
   register_wrapper.email = received.email
   register_wrapper.captcha = received.captcha
-  console.log(register_wrapper)
 }
 
 //登录功能区
@@ -256,7 +251,8 @@ const jumpToMerchantCenter = () => {
   <div class="z-index-4">
     <a-row>
       <a-col :span="3">
-        <img width="50" src="" @click="title_img_click">
+<!--        <img width="50" src="" @click="title_img_click">-->
+        logo
       </a-col>
       <a-col :span="14">
         <div class="vertical_center">

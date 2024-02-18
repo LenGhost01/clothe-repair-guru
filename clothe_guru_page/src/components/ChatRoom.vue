@@ -39,8 +39,8 @@ const visited_component = ref(chat_panels[0])
 <template>
   <!-- 遮罩层插槽 -->
   <div>
-    <slot/>
-    <!-- 聊天室主体页面 -->
+    <!--    <slot/>-->
+    <!--     聊天室主体页面-->
     <Transition name="chat_room">
       <div v-show="show_chat_room" :style="{
     display: 'inline-block',

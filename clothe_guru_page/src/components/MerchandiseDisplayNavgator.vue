@@ -153,6 +153,10 @@ const jumpToMerchandiseDetail = (id) => {
   window.open(`${window.location.origin}/src/pages/merchandise_detail/index.html?merchandiseId=${id}`)
 }
 
+const jumpToChatroom = (sender,receiver) => {
+  window.open(`${window.location.origin}/src/pages/chatroom/index.html`)
+}
+
 watch(selectedCategory, (newValue, oldValue) => {
   items[0].content.forEach(item => {
     if (item.id === oldValue) item.selected = false
@@ -318,7 +322,7 @@ onBeforeMount(()=>{
                 <template #title>
                   <span>联系商家</span>
                 </template>
-                <CommentOutlined/>
+                <CommentOutlined @click="jumpToChatroom(store.state.userState.user.userId,item.belongs)"/>
               </a-tooltip>
             </a-typography-link>
           </a-card>

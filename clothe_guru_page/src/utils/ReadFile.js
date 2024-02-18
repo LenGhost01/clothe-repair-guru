@@ -1,6 +1,7 @@
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid';
 
+let counter = -1
 const readFile = async function (url) {
     try {
         // 尝试获取资源
@@ -10,7 +11,7 @@ const readFile = async function (url) {
         const filename = url.split('/').pop(); // 从URL中获取文件名
         const file = new File([blob], filename, {type: blob.type}); // 创建File对象
         const fileObject = {
-            uid: -1, // 建议使用负数或唯一标识符，以避免与正常上传的文件冲突
+            uid: counter--, // 建议使用负数或唯一标识符，以避免与正常上传的文件冲突
             name: filename,
             status: 'done', // 设置为'done'表示文件已经上传
             url: URL.createObjectURL(blob), // 为文件生成一个临时URL，用于预览等

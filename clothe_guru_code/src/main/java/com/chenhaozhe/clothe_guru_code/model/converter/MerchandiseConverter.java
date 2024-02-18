@@ -11,7 +11,7 @@ public class MerchandiseConverter {
                 .merchandiseDescription(entity.getMerchandiseDescription())
                 .lowPrice(entity.getLowPrice())
                 .highPrice(entity.getHighPrice())
-                .belongs(entity.getBelongs())
+                .belongs(entity.getBelongs().toString())
                 .rating(entity.getRating())
                 .publishTime(entity.getPublishTime())
                 .sales(entity.getSales())
@@ -23,4 +23,5 @@ public class MerchandiseConverter {
                 .satisfactionRate(entity.getSatisfactionRate())
                 .build();
     }
+
 }
