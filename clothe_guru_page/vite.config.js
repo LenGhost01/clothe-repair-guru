@@ -1,12 +1,17 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from "path";
+import ckeditor5 from "@ckeditor/vite-plugin-ckeditor5";
+import { createRequire } from 'node:module'
+import {fileURLToPath} from 'url'
+const require = createRequire(import.meta.url)
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/', //nginx服务器中存放index.html的文件夹 vite使用，使用vue-cli则需要使用module.exports
   plugins: [
     vue(),
+    ckeditor5({ theme: require.resolve( '@ckeditor/ckeditor5-theme-lark') }),
   ],
   server: {
     open: '/src/pages/home/index.html',
@@ -39,6 +44,11 @@ export default defineConfig({
         merchandise_detail: path.resolve(__dirname, '/src/pages/merchandise_detail/index.html'),
         chatroom_view: path.resolve(__dirname, '/src/pages/chatroom/index.html'),
       }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': fileURLToPath( new URL( './src', import.meta.url ) )
     }
   }
 })

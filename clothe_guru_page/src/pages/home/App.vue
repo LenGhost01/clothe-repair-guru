@@ -30,7 +30,7 @@ onMounted(() => {
 
 <template>
 <!--  <chat-room>-->
-<!--    <Mask></Mask>-->
+<!--&lt;!&ndash;    <Mask></Mask>&ndash;&gt;-->
 <!--  </chat-room>-->
   <a-row>
     <a-col :span="4"></a-col>

@@ -185,12 +185,11 @@ onMounted(async () => {
   if (outerWrapper.value[0]) {
     // 如果这个容器没有值的话视作初始化失败
     const style = window.getComputedStyle(outerWrapper.value[0]);
+    console.log(style.width)
     // 这里可以根据需要访问更多CSS属性
     subDropdownWrapperWidth.value = style.width
     // ?? 是逻辑空合运算符，在检测到式子左边的值为undefined或null时会赋予式子右边的值
-    // console.log(translatedParams)
     merchandiseGetterParams.filterValue[items.map(item => item.key).indexOf(translatedParams.keyword)] = translatedParams.keyValue ?? ''
-    console.log(merchandiseGetterParams.filterValue)
     merchandiseGetterParams.keyWord = translatedParams.queryKeyword ?? ''
     merchandiseGetterParams.keyWordLabel = translatedParams.labelIndex ?? ''
     try {

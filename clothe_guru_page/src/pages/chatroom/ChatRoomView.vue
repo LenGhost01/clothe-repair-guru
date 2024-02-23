@@ -1,10 +1,10 @@
 <script setup>
 import ChatRoom from "/src/components/ChatRoom.vue";
-import ChatRoomPeerToPeer from "../../components/chatroomcomp/ChatRoomPeerToPeer.vue";
+import ChatRoomPeerToPeer from "/src/components/chatroomcomp/ChatRoomPeerToPeer.vue";
 </script>
 
 <template>
-<chat-room-peer-to-peer />
+  <ChatRoom></ChatRoom>
 </template>
 
 <style scoped>

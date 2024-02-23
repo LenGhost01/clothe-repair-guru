@@ -1,49 +1,29 @@
-<template>
-  <div class="input_box">
-    <div class="input_zone">
-      <a-input v-model:value.lazy="inputValue" autofocus placeholder="请输入要发送给对方的信息..." size="large"
-               :bordered="false"></a-input>
-    </div>
-    <div class="ability_zone">
-      <a-row class="vertical_center">
-        <a-col :span="8" class="operate_container">
-          <a-avatar :size="{ xs: 20, sm: 24, md: 28, lg: 32, xl: 36, xxl: 32 }">
-            <template #icon>
-              <AntDesignOutlined />
-            </template>
-          </a-avatar>
-        </a-col>
-        <a-col :span="8" class="operate_container">
-          <a-avatar :size="{ xs: 20, sm: 24, md: 28, lg: 32, xl: 36, xxl: 32 }">
-            <template #icon>
-              <AntDesignOutlined />
-            </template>
-          </a-avatar>
-        </a-col>
-        <a-col :span="8" class="operate_container">
-        <a-avatar :size="{ xs: 20, sm: 24, md: 28, lg: 32, xl: 36, xxl: 32 }">
-          <template #icon>
-            <AntDesignOutlined />
-          </template>
-        </a-avatar>
-      </a-col>
-      </a-row>
-    </div>
-  </div>
-</template>
-
 <script setup>
 
 import {ref, watch} from "vue";
-import { AntDesignOutlined } from '@ant-design/icons-vue'
+import {AntDesignOutlined} from '@ant-design/icons-vue'
+import RichTextInputBox from "@/components/RichTextInputBox.vue";
 
 const inputValue = ref('')
 watch(inputValue, () => {
-  //todo 当文本发生改动是，获取到改变后的新值
+      //todo 富文本插件失去焦点后，获取到富文本插件中的信息，显示在页面中
       console.log(inputValue.value);
     }
 )
 </script>
+
+<template>
+  <div class="input_box">
+    <div class="input_zone">
+      <rich-text-input-box></rich-text-input-box>
+    </div>
+    <div class="ability_zone">
+
+    </div>
+  </div>
+</template>
+
+
 
 <style scoped>
 .input_box {
@@ -57,17 +37,21 @@ watch(inputValue, () => {
 
 .input_zone {
   display: inline-block;
+  box-sizing: border-box;
   vertical-align: top;
-  width: 80%;
+  width: 90%;
   height: 100%;
+
 }
 
-.ability_zone{
+.ability_zone {
   position: relative;
   display: inline-block;
+  box-sizing: border-box;
   vertical-align: top;
-  width: 20%;
-  height:100%;
+  width: 10%;
+  height: 100%;
   text-align: center;
+  padding: 0 0.5em 0 0;
 }
 </style>

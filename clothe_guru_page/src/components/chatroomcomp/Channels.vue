@@ -3,7 +3,9 @@
 </script>
 
 <template>
-  <h5>已加入频道测试</h5>
+  <div class="sub-container">
+    频道页面测试
+  </div>
 </template>
 
 <style scoped>

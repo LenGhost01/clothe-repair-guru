@@ -4,11 +4,7 @@ import {MessageOutlined,UserDeleteOutlined} from '@ant-design/icons-vue'
 </script>
 
 <template>
-  <div :style="{
-    height: '100%',
-    width: '100%',
-    padding: '1.5em 0 0 1.5em',
-  }">
+  <div class="sub-container" style="padding: 1.5em 0 0 1.5em">
     <UserOutlined style="font-size: 1em"/>
     <span style="margin-left: 5%">在线 - 5</span>
     <a-button style="margin-left: 5%" type="primary" size="small" @click="console.log('添加好友')">添加好友</a-button>
@@ -50,32 +46,6 @@ import {MessageOutlined,UserDeleteOutlined} from '@ant-design/icons-vue'
 </template>
 
 <style scoped>
-.ps-container {
-  display: inline-block;
-  position: relative;
-  margin-top: 1.5em;
-  height: calc(100% - 4em);
-  overflow-y: scroll;
-  overflow-x: hidden;
-
-}
-
-
-.operation-container {
-  position: relative;
-  height: 45%;
-}
-
-.operation {
-  position: absolute;
-  display: inline-block;
-  right: 0;
-  bottom: 0;
-  width: 44%;
-  height: 80%;
-  text-align: center;
-  margin: auto;
-}
 
 .call{
 
