@@ -5,11 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrdersEntity {
+public class OrdersEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -4665481508095114236L;
     private Integer orderId;
     private Long userId;
     private Long merchantId;

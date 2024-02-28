@@ -17,13 +17,11 @@ export default {
             value.forEach(item=>{
                 status.category.set(item.categoryId,item)
             })
-            console.log(status.category)
         },
         UPDATE_MATERIAL(status, value) {
             value.forEach(item=>{
                 status.material.set(item.materialId,item)
             })
-            console.log(status.material)
         },
     },
     actions: {

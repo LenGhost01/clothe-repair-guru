@@ -1,12 +1,11 @@
 <script setup>
-import {markRaw, onBeforeUnmount, onMounted, reactive, ref} from "vue";
+import {markRaw, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import emitter from "/src/utils/EventBus.js";
 import {MessageFilled, PlusOutlined, UsergroupAddOutlined} from "@ant-design/icons-vue";
 import ChatRoomPeerToPeer from "./chatroomcomp/ChatRoomPeerToPeer.vue";
 import Channels from "./chatroomcomp/Channels.vue";
 import AddChannel from "./chatroomcomp/AddChannel.vue";
 import FoundChannel from "./chatroomcomp/FoundChannel.vue";
-
 
 const change_display_page = (page_name) => {
   // router.replace(page_name)
@@ -18,7 +17,9 @@ const visited_component = ref(chat_panels[0])
 // 生命周期钩子函数
 onMounted(() => {
   console.log("组件被初始化了")
+
 })
+
 
 onBeforeUnmount(() => {
   emitter.off("call_chat_room")

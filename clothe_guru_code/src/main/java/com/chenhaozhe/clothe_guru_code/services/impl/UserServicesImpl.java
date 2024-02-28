@@ -8,6 +8,7 @@ import com.chenhaozhe.clothe_guru_code.model.converter.UserConverter;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserEntity;
 import com.chenhaozhe.clothe_guru_code.model.entity.UserRecordEntity;
 import com.chenhaozhe.clothe_guru_code.model.vo.*;
+import com.chenhaozhe.clothe_guru_code.services.LoginStateMemoryServices;
 import com.chenhaozhe.clothe_guru_code.services.UserServices;
 import com.chenhaozhe.clothe_guru_code.util.*;
 import jakarta.annotation.Resource;
@@ -45,6 +46,8 @@ public class UserServicesImpl implements UserServices {
     private String imgPath;
     @Value("${customConst.defaultPageSize}")
     private Short defaultPageSize;
+    @Resource
+    private LoginStateMemoryServices loginStateMemoryServices;
 
     @Override
     public void InsertUserToDatabase(UserRegisterVo registerVo) {
@@ -88,6 +91,8 @@ public class UserServicesImpl implements UserServices {
         if (Objects.equals(userEntity, null)) {
             throw new CustomInputMismatchException("邮箱对应用户不存在！！！");
         }
+        // 将登录后的用户id放入登录用户cache中
+        loginStateMemoryServices.pushUsersIdCache(userEntity.getUserId());
         return generateUserMsgJson(userEntity);
     }
 
@@ -100,6 +105,8 @@ public class UserServicesImpl implements UserServices {
         if (!Objects.equals(password, userEntity.getPassword())) {
             throw new CustomInputMismatchException("密码验证错误，请检查密码输入！！！");
         }
+        // 将登录后的用户id放入登录用户cache中
+        loginStateMemoryServices.pushUsersIdCache(userEntity.getUserId());
         return generateUserMsgJson(userEntity);
     }
 
@@ -130,7 +137,6 @@ public class UserServicesImpl implements UserServices {
 
 
         }
-
         // 不推荐使用删除再添加的方式，在高并发的场景下无法保证操作的原子性
         Integer returnState = userMapper.updateUser(user);
         if (returnState < 1) {
@@ -227,8 +233,12 @@ public class UserServicesImpl implements UserServices {
         return userVo;
     }
 
-    @CacheEvict(key = "#uid")
+    @CacheEvict(key = "#uid",value = "userCache")
     @Override
     public void userEvict(Long uid) {
-    } //用户退出登录时，删除缓存中的信息
+        //用户退出登录时，删除缓存中的信息 并减去对应登录用户缓存中的id信息
+        loginStateMemoryServices.usersIdCacheEvict(uid);
+    }
+
+
 }

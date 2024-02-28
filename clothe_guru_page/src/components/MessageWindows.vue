@@ -31,8 +31,10 @@
 </template>
 
 <script setup>
-import {nextTick, onMounted, onUpdated, ref, watch} from "vue";
+import {inject, nextTick, onMounted, onUpdated, ref, watch} from "vue";
 
+// 使用依赖注入获取到父组件绑定的ws对象，并监听message
+const ws = inject("webSocketConnector")
 
 const rec = defineProps({
   transport: Object
@@ -49,6 +51,11 @@ watch(
     }
 )
 
+onMounted(()=>{
+  ws.value?.addEventListener('message', (message) => {
+    // ws接收到服务器发送的信息会调用这个回调 根据接收到的信息的type判断要执行怎样的业务逻辑
+  })
+})
 
 </script>
 

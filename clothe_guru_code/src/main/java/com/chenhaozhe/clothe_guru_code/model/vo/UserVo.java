@@ -5,11 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserVo {
+public class UserVo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 8657155271696131170L;
     private String userId;
     private String username;
     private Boolean passwordExists;

@@ -42,7 +42,6 @@ public class UserController {
 
     @PostMapping("/loginByMail")
     public String loginByMail(@RequestBody UserLoginMailDTO mailDTO) {
-        log.info(mailDTO.toString());
         return userServices.mailCheck(mailDTO.getEmail(), mailDTO.getCaptcha());
     }
 
@@ -55,7 +54,6 @@ public class UserController {
         Jws<Claims> claimsJws = JwtTokenUtil.checkToken(token);
         String uid = claimsJws.getPayload().getSubject();
         UserVo userById = userServices.getUserById(Long.valueOf(uid));
-        log.info(userById.toString());
         return userById;
     }
 
@@ -89,7 +87,6 @@ public class UserController {
 
     @GetMapping("/userQuit")
     public void userQuit(@RequestParam("uid") String userId) {
-        log.info(userId);
         userServices.userEvict(Long.valueOf(userId));
     }
 

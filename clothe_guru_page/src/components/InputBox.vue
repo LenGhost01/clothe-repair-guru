@@ -1,28 +1,42 @@
 <script setup>
 
-import {ref, watch} from "vue";
-import {AntDesignOutlined} from '@ant-design/icons-vue'
+import {inject, ref} from "vue";
 import RichTextInputBox from "@/components/RichTextInputBox.vue";
+import store from "@/store/store.js";
 
-const inputValue = ref('')
-watch(inputValue, () => {
-      //todo 富文本插件失去焦点后，获取到富文本插件中的信息，显示在页面中
-      console.log(inputValue.value);
-    }
-)
+const ws = inject("webSocketConnector")
+const senderText = ref('')
+const selectedUserId = inject("selectedUserId")
+const inputDataHandler = (e) => {
+  console.log(e)
+  senderText.value = e
+}
+
+
+const sendMessage = () => {
+  // todo 点击发送按钮后，将消息通过ws发送到ws服务器
+  ws.value.send(JSON.stringify({
+    type: "message",
+    sender: store.state.userState.user.userId,
+    receiver: selectedUserId.value,
+    sendTime: new Date().toLocaleString(),
+    content: senderText.value,
+  }))
+}
+
 </script>
 
 <template>
   <div class="input_box">
     <div class="input_zone">
-      <rich-text-input-box></rich-text-input-box>
+      <rich-text-input-box @inputData="inputDataHandler"></rich-text-input-box>
     </div>
     <div class="ability_zone">
-
+      <!-- 输入框功能区 -->
+      <a-button @click="sendMessage">发送</a-button>
     </div>
   </div>
 </template>
-
 
 
 <style scoped>

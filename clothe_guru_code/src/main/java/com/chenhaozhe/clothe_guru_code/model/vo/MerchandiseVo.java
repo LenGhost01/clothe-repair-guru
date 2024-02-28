@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,7 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MerchandiseVo {
+public class MerchandiseVo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 686313746883836339L;
     private Integer merchandiseId;
     private String merchandiseName;
     private String merchandiseDescription;

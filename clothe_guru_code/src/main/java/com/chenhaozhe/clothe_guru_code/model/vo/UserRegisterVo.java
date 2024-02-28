@@ -6,12 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserRegisterVo {
+public class UserRegisterVo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -6897491508031985296L;
     @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_]{4,16}$",message = "用户名不符合要求，必须使用大小写的英文字符或_-字符组成的4-16位的用户名。")
     private String username;
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$",message = "密码强度不符合要求，要求最少6位，必须包含大小写字母和数字的组合。")

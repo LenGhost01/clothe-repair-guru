@@ -43,7 +43,7 @@ public interface ApplicationsMapper {
     Integer UpdateApplicationsById(@Param("auditState")Short auditState,
                                    @Param("applicationId")Integer applicationId);
 
-    @Update("{CALL update_application_state(#{input_application_id}, #{input_user_id}, #{input_merchant_id}, #{input_merchant_name}, #{input_contact}, #{input_address}, #{input_merchant_description}, #{input_audit_state}, #{input_certification})}")
+    @Update("{CALL update_application_state(#{input_application_id}, #{input_user_id}, #{input_merchant_id}, #{input_merchant_name}, #{input_contact},#{input_email}, #{input_address}, #{input_merchant_description}, #{input_audit_state}, #{input_certification})}")
     Integer updateApplicationState(
             @Param("input_application_id") Integer inputApplicationId,
             @Param("input_user_id") Long inputUserId,

@@ -5,13 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MerchandiseEntity {
+public class MerchandiseEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -6731127978520044821L;
     private Integer merchandiseId;
     private String merchandiseName;
     private String merchandiseDescription;

@@ -30,7 +30,8 @@ import {TextTransformation} from '@ckeditor/ckeditor5-typing';
 import {Undo} from '@ckeditor/ckeditor5-undo';
 import '@ckeditor/ckeditor5-build-classic/build/translations/zh-cn';
 import MyUploadAdapter from "/src/utils/CustomUploadAdapter.js";
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
+import store from "@/store/store.js";
 
 const customUploadAdapter = function (editor) {
   // 自定义文件上传逻辑
@@ -39,10 +40,10 @@ const customUploadAdapter = function (editor) {
     return new MyUploadAdapter(loader);
   };
 }
-const editor = ref(ClassicEditor)
+const editor = ClassicEditor
 const container = ref(null)
 const editorWrapper = ref(null)
-const editorData = ref('<p>请在此处输入要发送的信息...</p>')
+const editorData = ref('')
 const editorConfig = ref({
   plugins: [
     Autoformat,
@@ -148,20 +149,18 @@ const editorConfig = ref({
   ]
 })
 const containerHeight = ref('')
-
-const logoutContent = () => {
-  console.log(editorData.value)
+const emitData = defineEmits(["inputData"])
+const logoutContent = (event,editor) => {
+  // 每次失去焦点，都向父组件发送当前输入框内的内容信息
+  emitData("inputData",editor.getData())
 }
 
 const onEditorReady = () => {
   // 当组件准备好时，获取组件的实例并修改其中的视口css
   let editorUI = editorWrapper.value?.instance.ui
-  console.log(editorWrapper.value)
   if (editorUI) {
     let editorEditable = editorUI.view
-    console.log(editorEditable);
   } else {
-    console.error("ui为空")
     return
   }
 }

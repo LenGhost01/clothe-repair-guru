@@ -28,10 +28,10 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/statics/, '')
       },
       '/requests': {
-        target: 'http://localhost:8090/clothe-master',
+        target: 'http://192.168.32.141/clothe-master',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/requests/, '')
-      }
+      },
     }
   },
   build: {

@@ -1,6 +1,4 @@
 # 开发环境配置
-
-
 spring:
   #配置mysql关系型数据库连接,并在url中设置自动提交。
   datasource:
@@ -56,6 +54,18 @@ spring:
       enabled: true
       max-file-size: 2GB
       max-request-size: 3000MB
+  rabbitmq:
+    host: 192.168.32.142
+    port: 5672
+    username: root
+    password: admin1234
+    virtual-host: clothe-guru-host
+    connection-timeout: 60000     # 连接超时时间（毫秒）
+    requested-heartbeat: 60       # 请求的心跳超时时间（秒）
+#    listener:
+#      simple:
+#        acknowledge-mode: manual
+
 
 # 开发流程中，直接将sql语句打印到控制台，方便调试
 mybatis:
@@ -69,6 +79,7 @@ server:
     context-path: "/clothe-master"
     encoding:
       charset: UTF-8
+  address: 10.62.120.114
 
 store:
   ftp:
@@ -77,6 +88,7 @@ store:
     user: "chenhaozhe"
     password: "opr416"
     imgPath: resources/images/
+
 
 customConst:
   defaultPageSize: 20

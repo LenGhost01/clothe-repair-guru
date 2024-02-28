@@ -5,11 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApplicationsEntity {
+public class ApplicationsEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -609271304655073592L;
     private Integer applicationId;
     private Long userId;
     private String applyTime;

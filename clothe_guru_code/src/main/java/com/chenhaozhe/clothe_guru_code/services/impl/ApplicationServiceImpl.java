@@ -129,7 +129,7 @@ public class ApplicationServiceImpl implements ApplicationServices {
     @Override
     @Transactional
     public void updateApplication(ApplicationReplyDTO applicationReplyDTO) {
-        log.info(applicationReplyDTO.toString());
+        log.info("接收到的邮箱是{}",applicationReplyDTO.getEmail());
         Integer res = applicationsMapper.updateApplicationState(applicationReplyDTO.getApplicationId(), applicationReplyDTO.getUserId()
                 , new SnowFlake(1, 1).nextId(), applicationReplyDTO.getMerchantName(), applicationReplyDTO.getPhone(),
                 applicationReplyDTO.getEmail(), applicationReplyDTO.getAddress(), applicationReplyDTO.getIntroduce(),
