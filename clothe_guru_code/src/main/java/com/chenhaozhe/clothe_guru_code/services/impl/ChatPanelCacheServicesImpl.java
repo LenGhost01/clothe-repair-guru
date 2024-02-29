@@ -10,7 +10,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -45,7 +48,10 @@ public class ChatPanelCacheServicesImpl implements ChatPanelCacheServices {
 
     @Override
     @CachePut(key = "#userId", value = "privateChatCache")
-    public List<UserPrivateChatViewEntity> updateChatRoomPrivateChatCache(String userId) {
+    @Transactional
+    public List<UserPrivateChatViewEntity> updateChatRoomPrivateChatCache(String userId,String targetId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        chatPanelCacheMapper.insertPrivateChat(userId,targetId,LocalDateTime.now().format(formatter));
         return chatPanelCacheMapper.getPrivateChatFromView(userId);
     }
 

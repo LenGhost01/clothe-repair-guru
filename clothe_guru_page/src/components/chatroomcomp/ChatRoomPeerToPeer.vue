@@ -9,6 +9,8 @@ import PrivateChat from "./chatcomp/PrivateChat.vue"
 import emitter from "/src/utils/EventBus.js"
 import store from "@/store/store.js";
 import axios from "axios";
+import {message} from "ant-design-vue";
+import errPrompt from "@/utils/StandardExceptioPrompt.js";
 
 const request = import.meta.env.VITE_API_REQUESTS_PATH
 const images = import.meta.env.VITE_API_IMAGES_PATH
@@ -77,6 +79,24 @@ onMounted(async () => {
           type:"queueListener",
           sender: userId,
         }))
+      })
+
+      ws.value.addEventListener("message",async function (event){
+        if(event.isTrusted){
+          let rec = JSON.parse(event.data)
+          rec.isRead = false
+          if(store.state.MembersStore.privateChatMember.map(item=>item.targetId).indexOf(rec.sender) === -1){
+            console.log("发送信息的用户不在私信列表中")
+            await store.dispatch("MembersStore/refreshPrivateChatMember",{
+              userId: rec.receiver,
+              targetId: rec.sender,
+            })
+          }
+          await store.dispatch("messageStore/addReceivedMessage",rec)
+          console.log(store.state.messageStore.receivedMessage)
+        }else{
+          message.warning("消息传递出现异常")
+        }
       })
     }
   })

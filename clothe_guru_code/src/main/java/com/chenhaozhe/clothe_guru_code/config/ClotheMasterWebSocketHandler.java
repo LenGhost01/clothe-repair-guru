@@ -9,14 +9,13 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerEndpoint;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -27,16 +26,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ClotheMasterWebSocketHandler implements WebSocketHandler {
     private final SocketExecutorConfig socketExecutor;
+    private ConcurrentHashMap containerMap = new ConcurrentHashMap();
     @Resource
     private RabbitTemplate rabbitTemplate;
     @Resource
     private AmqpAdmin amqpAdmin;
-
-    @Resource
-    private SimpleRabbitListenerEndpoint endpoint;
     // 使用redis存放房间号相关信息
     @Resource
     private ChatManagementServices chatManagementServices;
+    @Resource
+    private DynamicMessageListener dynamicMessageListener;
 
     public ClotheMasterWebSocketHandler(SocketExecutorConfig socketExecutor) {
         this.socketExecutor = socketExecutor;
@@ -70,14 +69,30 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
             if (Objects.equals(messageDTO.getType(), "message")) {
                 // 调用rabbitmq将消息发送到对应交换机 交换机的类型是直连交换机，针对每一个用户id进行匹配，路由键要和队列名匹配
                 declareExchangeAndQueue(id, messageDTO.getReceiver(), messageDTO.getReceiver());
-
-                rabbitTemplate.convertAndSend(id, messageDTO.getReceiver(), messageDTO.getContent());
+                rabbitTemplate.convertAndSend(id, messageDTO.getReceiver(), JackonUtil.ObjectToJSON(messageDTO));
             }
             if (Objects.equals(messageDTO.getType(), "queueListener")) {
                 log.info("开启消费者监听,消费者:{}", messageDTO.getSender());
                 // 初始化消费者队列
-
-
+                SimpleMessageListenerContainer simpleMessageListenerContainer =
+                        dynamicMessageListener.startListener(messageDTO.getSender(), (msg, channel) -> {
+                            // 执行送信逻辑
+                            try {
+                                String received = new String(msg.getBody(), StandardCharsets.UTF_8);
+                                session.sendMessage(new TextMessage(received));
+                                Long deliveryTag = msg.getMessageProperties().getDeliveryTag();
+                                channel.basicAck(deliveryTag, false);
+                            } catch (Exception e) {
+                                try {
+                                    Long deliveryTag = msg.getMessageProperties().getDeliveryTag();
+                                    channel.basicNack(deliveryTag, false, true);
+                                } catch (IOException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                            }
+                        });
+                // 将对这个链接的监听加入到一个map对象中
+                containerMap.put(id, simpleMessageListenerContainer);
             }
         });
     }
@@ -96,6 +111,7 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
             // todo 进行数据持久化
 
             // 最后一步：清理资源
+            containerMap.remove(session.getId());
             amqpAdmin.deleteExchange(session.getId());
             chatManagementServices.removeSocketMap(session.getId());
         });
@@ -134,6 +150,4 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
         Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, exchangeName, routingKey, null);
         amqpAdmin.declareBinding(binding);
     }
-
-
 }

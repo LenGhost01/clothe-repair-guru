@@ -9,4 +9,6 @@ public interface ChatroomServices {
     List initPeerChat(String userId);
 
     List initFriendPanel(String userId);
+
+    List insertNewPrivateChat(String userId,String targetId);
 }

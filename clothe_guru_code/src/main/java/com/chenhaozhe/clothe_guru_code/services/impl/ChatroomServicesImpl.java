@@ -60,4 +60,11 @@ public class ChatroomServicesImpl implements ChatroomServices {
                 .toList();
         return list;
     }
+
+    @Override
+    public List insertNewPrivateChat(String userId, String targetId) {
+       return chatPanelCacheServices.updateChatRoomPrivateChatCache(userId,targetId);
+    }
+
+
 }

@@ -13,7 +13,7 @@ public interface ChatPanelCacheServices {
     void clearChatRoomFriendCache(String userId);
 
     List<UserPrivateChatViewEntity> userChatRoomPrivateChatCache(String userId);
-    List<UserPrivateChatViewEntity> updateChatRoomPrivateChatCache(String userId);
+    List<UserPrivateChatViewEntity> updateChatRoomPrivateChatCache(String userId,String targetId);
 
     void clearPrivateChatCache(String UserId);
 }

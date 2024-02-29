@@ -2,6 +2,7 @@ import {createStore} from "vuex";
 import merchantStore from "@/store/modules/merchantStore.js";
 import merchandiseDetailStore from "@/store/modules/merchandiseDetailStore.js";
 import MembersStore from "@/store/modules/membersStore.js";
+import messageStore from "@/store/modules/MessageStore.js";
 
 export default createStore({
     state() {
@@ -44,6 +45,6 @@ export default createStore({
             context.commit("UPDATE_USER_ADDRESS",value)
         }
     },
-    modules: {merchantStore,merchandiseDetailStore,MembersStore},
+    modules: {merchantStore,merchandiseDetailStore,MembersStore,messageStore},
 
 })

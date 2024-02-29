@@ -23,15 +23,14 @@ public class ChatRoomController {
         //根据掩膜和选取的功能来判断用户使用的那种类型的图像处理服务，在不使用其他技术的情况下opencv的图像修复技术需要提供一张掩膜
     }
 
-    // todo 点对点聊天功能实现
-    @PostMapping("/peerToPeer")
-    void ChatByPeerToPeer(@RequestBody ChatPeerToPeerDTO chatPeerToPeerDTO) {
-
-    }
-
     @GetMapping("/initPeerChat")
     List initChatPanel(@RequestParam("userId") Long userId) {
         return chatroomServices.initPeerChat(String.valueOf(userId));
+    }
+
+    @GetMapping("/insertNewPrivateChat")
+    List insertNewPrivateChat(@RequestParam("userId") String userId,@RequestParam("targetId")String targetId) {
+        return chatroomServices.insertNewPrivateChat(userId,targetId);
     }
 
     @GetMapping("/initFriendPanel")

@@ -62,9 +62,9 @@ spring:
     virtual-host: clothe-guru-host
     connection-timeout: 60000     # 连接超时时间（毫秒）
     requested-heartbeat: 60       # 请求的心跳超时时间（秒）
-#    listener:
-#      simple:
-#        acknowledge-mode: manual
+    listener:
+      direct:
+        acknowledge-mode: manual
 
 
 # 开发流程中，直接将sql语句打印到控制台，方便调试
@@ -79,7 +79,7 @@ server:
     context-path: "/clothe-master"
     encoding:
       charset: UTF-8
-  address: 10.62.120.114
+  address: 10.62.120.27
 
 store:
   ftp:

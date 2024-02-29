@@ -1,3 +1,6 @@
+import axios from "axios";
+import errPrompt from "@/utils/StandardExceptioPrompt.js";
+const reqPath = import.meta.env.VITE_API_REQUESTS_PATH
 export default {
     namespaced: true, // 使用命名空间
     state() {
@@ -9,10 +12,10 @@ export default {
     },
     mutations: {
         ADD_PRIVATE_CHAT_MEMBER(status,value){
-            status.privateChatMember.push(...value)
+            status.privateChatMember = value
         },
         ADD_USER_CORRELATION_MEMBER(status,value){
-            status.userCorrelationMember.push(...value)
+            status.userCorrelationMember= value
         },
         UPDATE_MEMBER_STATE(status,value){
             status.privateChatMember.map(item=>{
@@ -38,11 +41,19 @@ export default {
                 context.commit("ADD_PRIVATE_CHAT_MEMBER",value)
             }
         },
+        async refreshPrivateChatMember(context,value){
+            try {
+                let res = await axios.get(`${reqPath}/chat/insertNewPrivateChat?userId=${value.userId}&targetId=${value.targetId}`)
+                context.commit("ADD_PRIVATE_CHAT_MEMBER",res.data)
+
+            }catch (err){
+                errPrompt(err)
+            }
+        },
         updateUserCorrelationMember(context,value){
             if(Array.isArray(value) && value.length>0){
                 context.commit("ADD_USER_CORRELATION_MEMBER",value)
             }
-
         }
     },
     getters: {
