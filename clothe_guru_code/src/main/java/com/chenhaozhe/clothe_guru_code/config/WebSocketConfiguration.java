@@ -21,10 +21,15 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(clotheMasterHandler(),"/webSocketServer").setAllowedOrigins("*");
+        registry.addHandler(ClotheMasterImageProcessingSocketHandler(),"/imageProcessing").setAllowedOrigins("*");
     }
 
     @Bean
     public WebSocketHandler clotheMasterHandler() {return new ClotheMasterWebSocketHandler(socketExecutorConfig);}
+    @Bean
+    public WebSocketHandler ClotheMasterImageProcessingSocketHandler(){
+        return new ClotheMasterImageProcessingSocketHandler(socketExecutorConfig);
+    }
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();

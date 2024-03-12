@@ -10,5 +10,10 @@ public interface ChatroomServices {
 
     List initFriendPanel(String userId);
 
+    List initMessageRecord(String userId,String targetId);
+
     List insertNewPrivateChat(String userId,String targetId);
+
+    // 编写消息写入服务
+    void messageRecord(String redisKey,Integer popBatch);
 }

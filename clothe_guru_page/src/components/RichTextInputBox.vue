@@ -113,15 +113,15 @@ const editorConfig = ref({
         icon: 'original'
       },
       {
-        name: 'imageResize:25',
+        name: 'imageResize:25%',
         value: '25',
         label: '25%',
         icon: 'small'
       },
       {
         name: 'imageResize:50',
-        value: '50',
-        label: '50%',
+        value: '50%',
+        label: '50',
         icon: 'medium'
       },
       {

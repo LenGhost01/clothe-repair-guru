@@ -124,20 +124,20 @@ public class MerchantServiceImpl implements MerchantServices {
 //        }
 //    }
 
-    @Cacheable(key = "#{merchantId}", value = "merchantCache")
+    @Cacheable(key = "#merchantId", value = "merchantCache")
     @Override
     public MerchantVo getMerchantByMerchantId(Long merchantId) {
         // 商家第一次访问时，添加vo到缓存中，接下来的每次访问都会从缓存中获取，并刷新过期时间
         return MerchantConverter.EntityToVo(merchantMapper.selectMerchantByMerchantId(merchantId));
     }
 
-    @CachePut(key = "#{merchantId}", value = "merchantCache")
+    @CachePut(key = "#merchantId", value = "merchantCache")
     public MerchantVo updateMerchantByMerchantId(Long merchantId) {
         // 商家修改信息时，会刷新缓存中的信息与过期时间。
         return MerchantConverter.EntityToVo(merchantMapper.selectMerchantByMerchantId(merchantId));
     }
 
-    @CacheEvict(key = "#{merchantId}")
+    @CacheEvict(key = "#merchantId",value = "merchantCache")
     // 商家退出登录清除缓存(实际上是商家对应用户退出登录，此处可能会增加耦合度)
     public void merchantQuit(Long merchantId) {
     }

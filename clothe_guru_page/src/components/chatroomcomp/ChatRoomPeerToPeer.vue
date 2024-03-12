@@ -52,6 +52,7 @@ const selectedUserId = ref('')
 provide("selectedUserId",selectedUserId)
 
 const call_chat_panel = (target) => {
+  console.log(target)
   selectedUserId.value = target
   nextTick(() => {
     activated_chat_component.value = chat_component[4]
@@ -80,20 +81,27 @@ onMounted(async () => {
           sender: userId,
         }))
       })
-
       ws.value.addEventListener("message",async function (event){
         if(event.isTrusted){
           let rec = JSON.parse(event.data)
-          rec.isRead = false
-          if(store.state.MembersStore.privateChatMember.map(item=>item.targetId).indexOf(rec.sender) === -1){
-            console.log("发送信息的用户不在私信列表中")
-            await store.dispatch("MembersStore/refreshPrivateChatMember",{
-              userId: rec.receiver,
-              targetId: rec.sender,
-            })
+          switch (rec.type){
+            case 'singleMessage':
+              // 接收到单一信息，通常是rabbitmq队列中收到的信息
+                const singleMsg = JSON.parse(rec.content)
+              if(store.state.MembersStore.privateChatMember.map(item=>item.targetId).indexOf(singleMsg.senderId) === -1){
+                console.log("发送信息的用户不在私信列表中")
+                await store.dispatch("MembersStore/refreshPrivateChatMember",{
+                  userId: singleMsg.receiver,
+                  targetId: singleMsg.sender,
+                })
+              }
+              await store.dispatch("messageStore/addReceivedMessage",singleMsg)
+              console.log(store.state.messageStore.receivedMessage)
+              break
+            default:
+              console.error("对不起，参数已经超出限制")
           }
-          await store.dispatch("messageStore/addReceivedMessage",rec)
-          console.log(store.state.messageStore.receivedMessage)
+
         }else{
           message.warning("消息传递出现异常")
         }

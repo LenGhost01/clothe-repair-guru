@@ -1,7 +1,9 @@
 package com.chenhaozhe.clothe_guru_code.config;
 
 import com.chenhaozhe.clothe_guru_code.model.dto.MessageDTO;
+import com.chenhaozhe.clothe_guru_code.model.entity.PeerMessageRecordEntity;
 import com.chenhaozhe.clothe_guru_code.services.ChatManagementServices;
+import com.chenhaozhe.clothe_guru_code.services.ChatroomServices;
 import com.chenhaozhe.clothe_guru_code.util.JackonUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -9,17 +11,17 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -33,9 +35,15 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
     private AmqpAdmin amqpAdmin;
     // 使用redis存放房间号相关信息
     @Resource
+    // 这个服务类用来保存频道中的成员信息
     private ChatManagementServices chatManagementServices;
     @Resource
     private DynamicMessageListener dynamicMessageListener;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+    @Resource
+    private ChatroomServices chatroomServices;
 
     public ClotheMasterWebSocketHandler(SocketExecutorConfig socketExecutor) {
         this.socketExecutor = socketExecutor;
@@ -53,23 +61,47 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-        //TODO 服务器接收到消息时执行的业务 根据前端传输过来的消息的type决定
+        //TODO 服务器接收到消息时执行的业务 根据前端传输过来的消息的type决定 最后尝试分析各个if语句的使用频率，分配分支语句
         socketExecutor.socketExecutor().submit(() -> {
             String id = session.getId();
             MessageDTO messageDTO = JackonUtil.JsonToObject(message.getPayload().toString(), MessageDTO.class);
-            if (Objects.equals(messageDTO.getType(), "init")) {
-                // 类型是init标识对当前保存的成员集合进行初始化
-                List memberList = JackonUtil.jsonToList(messageDTO.getContent(), String.class);
-                // 创建一个线程安全的set用来保存用户成员信息并确保用户成员id的唯一性
-                Set<String> members = ConcurrentHashMap.newKeySet();
-                memberList.forEach(item -> members.add(String.valueOf(item)));
-                chatManagementServices.putSocketMap(id, members);
-                log.info("当前缓存中的聊天室id:{},成员有:{}", id, chatManagementServices.getSocketMap(id));
-            }
             if (Objects.equals(messageDTO.getType(), "message")) {
                 // 调用rabbitmq将消息发送到对应交换机 交换机的类型是直连交换机，针对每一个用户id进行匹配，路由键要和队列名匹配
                 declareExchangeAndQueue(id, messageDTO.getReceiver(), messageDTO.getReceiver());
-                rabbitTemplate.convertAndSend(id, messageDTO.getReceiver(), JackonUtil.ObjectToJSON(messageDTO));
+                CorrelationData correlationDataId = new CorrelationData();
+                correlationDataId.setId(UUID.randomUUID().toString()); // 设置唯一标识
+                rabbitTemplate.convertAndSend(id, messageDTO.getReceiver(), JackonUtil.ObjectToJSON(
+                        PeerMessageRecordEntity.builder()
+                                .senderId(messageDTO.getSender())
+                                .receiverId(messageDTO.getReceiver())
+                                .content(messageDTO.getContent())
+                                .createTime(messageDTO.getSendTime())
+                                .peerChatId(correlationDataId.getId())
+                                .build()
+                ),correlationDataId);
+                // 在确认消息发送到交换机后，将新的信息追加到本地的文件中
+                rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+                    if (ack) {
+                        log.info("Message:{} sent successfully",correlationData.getId());
+
+                    } else {
+                        log.info("Message:{} sending failed: {}",correlationData,cause);
+                        // 处理消息发送失败的情况 例如向前端发送一个错误信息告知用户发送失败
+
+                    }
+                });
+            }
+            if (Objects.equals(messageDTO.getType(), "init")) {
+                // 类型是peerInit标识 获取当前聊天室内需显示的消息
+                log.info("初始化私聊组件");
+                try {
+                    log.info("接收到的数据:{}",messageDTO);
+                    List messageRecord = chatroomServices.initMessageRecord(messageDTO.getSender(), messageDTO.getReceiver());
+                    MessageDTO initMessage = MessageDTO.builder().type("initMessage").content(JackonUtil.ListToJson(messageRecord)).build();
+                    session.sendMessage(new TextMessage(JackonUtil.ObjectToJSON(initMessage)));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             if (Objects.equals(messageDTO.getType(), "queueListener")) {
                 log.info("开启消费者监听,消费者:{}", messageDTO.getSender());
@@ -79,9 +111,14 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
                             // 执行送信逻辑
                             try {
                                 String received = new String(msg.getBody(), StandardCharsets.UTF_8);
-                                session.sendMessage(new TextMessage(received));
+                                session.sendMessage(new TextMessage(JackonUtil.ObjectToJSON(
+                                        MessageDTO.builder().type("singleMessage").content(received).build())
+                                ));
                                 Long deliveryTag = msg.getMessageProperties().getDeliveryTag();
                                 channel.basicAck(deliveryTag, false);
+                                // 确认接收后，将消息送入缓存
+//                                log.info("消息:{}被送入缓存",received);
+                                redisTemplate.opsForList().leftPush(session.getId(),received);
                             } catch (Exception e) {
                                 try {
                                     Long deliveryTag = msg.getMessageProperties().getDeliveryTag();
@@ -109,11 +146,10 @@ public class ClotheMasterWebSocketHandler implements WebSocketHandler {
             // 业务逻辑
             log.info("一个会话关闭了连接，id是:{}", session.getId());
             // todo 进行数据持久化
-
-            // 最后一步：清理资源
+            chatroomServices.messageRecord(session.getId(),10);
+            // 最后一步：清理资源 移除成员信息，关闭监听，删除对应session-id的交换机
             containerMap.remove(session.getId());
             amqpAdmin.deleteExchange(session.getId());
-            chatManagementServices.removeSocketMap(session.getId());
         });
     }
 

@@ -14,6 +14,10 @@ export default {
         },
         ADD_RECEIVED_MESSAGE(status,value){
             status.receivedMessage.push(value)
+        },
+        INIT_MESSAGE(status,value,receiver){
+            status.receivedMessage.push(...value.filter(item=>item.receiver===receiver))
+            status.senderMessage.push(...value.filter(item=>item.sender===receiver))
         }
     },
     actions: {
@@ -23,6 +27,9 @@ export default {
         },
         addReceivedMessage(context,value){
             context.commit("ADD_RECEIVED_MESSAGE",value)
+        },
+        initMessage(context,value,receiver){
+            context.commit("INIT_MESSAGE",value??[],receiver)
         }
     },
     getters: {

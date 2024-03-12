@@ -65,6 +65,9 @@ spring:
     listener:
       direct:
         acknowledge-mode: manual
+    publisher-confirm-type: correlated
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 
 # 开发流程中，直接将sql语句打印到控制台，方便调试
@@ -79,7 +82,8 @@ server:
     context-path: "/clothe-master"
     encoding:
       charset: UTF-8
-  address: 10.62.120.27
+  address: 10.62.120.45
+  shutdown: graceful
 
 store:
   ftp:
